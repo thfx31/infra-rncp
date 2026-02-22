@@ -71,7 +71,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
     user_account {
       username = var.ci_user
-      keys     = [for f in var.ssh_public_key_files : trimspace(file(pathexpand(f)))]
+      keys     = [trimspace(file(pathexpand(var.ssh_public_key_file)))]
     }
   }
 

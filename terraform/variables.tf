@@ -53,13 +53,10 @@ variable "ci_user" {
   default     = "admintf"
 }
 
-variable "ssh_public_key_files" {
-  description = "Chemin vers la clé SSH publique à injecter dans les VM"
-  type        = list(string)
-  default     = [
-    "~/.ssh/id_bastion.pub", # Clé pour l'accès depuis la machine bastion
-    "~/.ssh/perso_key.pub", # Clé pour l'accès depuis la machine personnelle
-  ]
+variable "ssh_public_key_file" {
+  description = "Clé SSH publique à injecter dans les VM"
+  type        = string
+  default     = "~/.ssh/id_ed25519.pub"
 }
 
 # -----------------------------------------------------------------------------

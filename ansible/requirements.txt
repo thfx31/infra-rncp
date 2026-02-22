@@ -2,3 +2,5 @@
 # runtime
 # #######
 ansible
+lint
+kubernetes

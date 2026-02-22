@@ -1,0 +1,15 @@
+all:
+  children:
+    control_plane:
+      hosts:
+        cp-01:
+
+    workers:
+      hosts:
+        worker-01:
+        worker-02:
+
+    k8s_cluster:
+      children:
+        control_plane:
+        workers:

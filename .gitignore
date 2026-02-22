@@ -4,14 +4,22 @@
 *.tfstate
 *.tfstate.backup
 *.tfplan
-
-# Variables sensibles (tokens, secrets)
 terraform.tfvars
 *.auto.tfvars
+
+# Ansible
+*.retry
+
+# Python
+__pycache__/
+*.pyc
 
 # Clés SSH
 *.pub
 *.pem
+
+# Kubeconfig
+config-poc
 
 # OS
 .DS_Store
