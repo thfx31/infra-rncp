@@ -1,0 +1,118 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitlab
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.gitlab.io/
+    chart: gitlab
+    targetRevision: 9.9.0
+    helm:
+      valuesObject:
+        global:
+          hosts:
+            domain: k8s.thfx.fr
+            gitlab:
+              name: gitlab.k8s.thfx.fr
+            minio:
+              name: minio.k8s.thfx.fr
+          ingress:
+            class: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            configureCertmanager: false
+            tls:
+              enabled: true
+          edition: ce
+          kas:
+            enabled: false
+          pages:
+            enabled: false
+          appConfig:
+            enableUsagePing: false
+        # Désactiver les composants inutiles pour le POC
+        upgradeCheck:
+          enabled: false
+        certmanager:
+          installCRDs: false
+        nginx-ingress:
+          enabled: false
+        prometheus:
+          install: false
+        gitlab-runner:
+          install: false
+        registry:
+          enabled: false
+        # Réduire les ressources
+        gitlab:
+          webservice:
+            minReplicas: 1
+            maxReplicas: 1
+            ingress:
+              tls:
+                secretName: gitlab-webservice-tls
+            resources:
+              requests:
+                cpu: 300m
+                memory: 1.5Gi
+              limits:
+                memory: 3Gi
+          sidekiq:
+            minReplicas: 1
+            maxReplicas: 1
+            resources:
+              requests:
+                cpu: 200m
+                memory: 1Gi
+              limits:
+                memory: 2Gi
+          gitaly:
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+            persistence:
+              storageClass: longhorn
+              size: 10Gi
+          toolbox:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+          gitlab-shell:
+            minReplicas: 1
+            maxReplicas: 1
+        postgresql:
+          persistence:
+            storageClass: longhorn
+            size: 5Gi
+        redis:
+          master:
+            persistence:
+              storageClass: longhorn
+              size: 2Gi
+        minio:
+          ingress:
+            tls:
+              secretName: gitlab-minio-tls
+          persistence:
+            storageClass: longhorn
+            size: 5Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gitlab
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
