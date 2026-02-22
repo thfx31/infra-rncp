@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.jenkins.io
+    chart: jenkins
+    targetRevision: 5.8.142
+    helm:
+      valuesObject:
+        controller:
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            hostName: jenkins.k8s.thfx.fr
+            tls:
+              - secretName: jenkins-tls
+                hosts:
+                  - jenkins.k8s.thfx.fr
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 2Gi
+          installPlugins:
+            - kubernetes:4423.vb_59f230b_ce53
+            - workflow-aggregator:608.v67378e9d3db_1
+            - git:5.10.0
+            - configuration-as-code:2037.v8e5349845172
+          additionalPlugins:
+            - gitlab-plugin:latest
+            - sonar:latest
+            - docker-workflow:latest
+            - blueocean:latest
+        persistence:
+          enabled: true
+          storageClass: longhorn
+          size: 10Gi
+        agent:
+          enabled: true
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jenkins
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
