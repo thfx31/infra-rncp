@@ -38,6 +38,7 @@
     - 30000-32767/tcp  # NodePort range
     - 3260/tcp        # iSCSI pour Longhorn
     - 9500/tcp        # Longhorn manager
+    - 30443/tcp   # ArgoCD UI
 
 # -- Ports spécifiques au control plane --
 - name: Ouvrir les ports control plane

@@ -7,6 +7,12 @@
 - Résolution DNS des hostnames `cp-01`, `worker-01`, `worker-02`
 - `kubectl` et `helm` installés localement (pour les playbooks fondation)
 
+## Installer les packages sur le bastion
+```bash
+sudo dnf makecache --refresh
+sudo dnf install -y python3 python3-pip git vim
+```
+
 ## Setup de l'environnement
 
 Depuis la racine du dépôt :
@@ -17,6 +23,10 @@ make setup
 
 # Activer le virtualenv
 source ~/.virtualenvs/ansible/bin/activate
+
+# Ajouter un alias au bashrc
+echo 'monenv="source ~/.virtualenv/ansible/bin/activate"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 Le setup installe :
@@ -83,7 +93,6 @@ Le playbook termine par un `kubectl get nodes` pour vérifier l'état du cluster
 ### `install-foundation.yml` — Composants fondation
 
 Installe les composants infrastructure sur le cluster. Nécessite le kubeconfig.
-
 ```bash
 # Récupérer le kubeconfig d'abord
 make kubeconfig
@@ -104,6 +113,20 @@ Le playbook comporte deux plays :
 |------|-------------|
 | `cilium` | CNI Cilium v1.16.5 via Helm dans `kube-system`, avec Hubble (observabilité réseau) activé |
 | `longhorn` | Stockage distribué Longhorn v1.7.2 via Helm dans `longhorn-system`, 2 réplicas par volume |
+| `argocd` | ArgoCD v7.7.11 via Helm dans `argocd`, UI exposée en NodePort 30443 |
+
+### Accès ArgoCD
+
+L'UI ArgoCD est accessible via `https://<n'importe quel node>:30443`.
+```bash
+# Récupérer le mot de passe admin initial
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+```
+
+- **User** : `admin`
+- **Mot de passe** : celui retourné par la commande ci-dessus
+
+> Il est recommandé de changer le mot de passe après la première connexion via l'UI ou `argocd account update-password`.
 
 ## Kubeconfig
 

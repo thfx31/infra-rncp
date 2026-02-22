@@ -1,0 +1,24 @@
+---
+- name: Ajouter le repo Helm ArgoCD
+  kubernetes.core.helm_repository:
+    name: argo
+    repo_url: https://argoproj.github.io/argo-helm
+
+- name: Créer le namespace argocd
+  kubernetes.core.k8s:
+    name: argocd
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Installer ArgoCD
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: argo/argo-cd
+    chart_version: "7.7.11"
+    release_namespace: argocd
+    values:
+      server:
+        service:
+          type: NodePort
+          nodePortHttps: 30443
