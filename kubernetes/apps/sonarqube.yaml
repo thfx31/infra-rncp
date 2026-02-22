@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarqube
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://sonarsource.github.io/helm-chart-sonarqube
+    chart: sonarqube
+    targetRevision: 2026.1.0
+    helm:
+      valuesObject:
+        monitoringPasscode: "Ch4ng3M3!"
+        community:
+           enabled: true
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          hosts:
+            - name: sonarqube.k8s.thfx.fr
+              path: /
+          tls:
+            - secretName: sonarqube-tls
+              hosts:
+                - sonarqube.k8s.thfx.fr
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod
+        resources:
+          requests:
+            cpu: 400m
+            memory: 1.5Gi
+          limits:
+            memory: 3Gi
+        persistence:
+          enabled: true
+          storageClass: longhorn
+          size: 5Gi
+        postgresql:
+          persistence:
+            storageClass: longhorn
+            size: 5Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: sonarqube
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
