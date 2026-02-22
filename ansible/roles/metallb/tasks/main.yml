@@ -1,0 +1,58 @@
+---
+- name: Ajouter le repo Helm MetalLB
+  kubernetes.core.helm_repository:
+    name: metallb
+    repo_url: https://metallb.github.io/metallb
+
+- name: Créer le namespace MetalLB
+  kubernetes.core.k8s:
+    name: "{{ metallb_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Installer MetalLB
+  kubernetes.core.helm:
+    name: metallb
+    chart_ref: metallb/metallb
+    chart_version: "{{ metallb_chart_version }}"
+    release_namespace: "{{ metallb_namespace }}"
+    wait: true
+    wait_timeout: "300s"
+
+- name: Attendre que les pods MetalLB soient prêts
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: "{{ metallb_namespace }}"
+    name: metallb-controller
+    wait: true
+    wait_timeout: 120
+    wait_condition:
+      type: Available
+      status: "True"
+
+- name: Configurer l'IP Pool MetalLB
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: IPAddressPool
+      metadata:
+        name: default-pool
+        namespace: "{{ metallb_namespace }}"
+      spec:
+        addresses:
+          - "{{ metallb_ip_range }}"
+
+- name: Configurer l'annonce L2
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: metallb.io/v1beta1
+      kind: L2Advertisement
+      metadata:
+        name: default-l2
+        namespace: "{{ metallb_namespace }}"
+      spec:
+        ipAddressPools:
+          - default-pool

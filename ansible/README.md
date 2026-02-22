@@ -6,6 +6,7 @@
 - Accès SSH par clé vers les nodes K8s (user `admintf`, sudo sans mot de passe)
 - Résolution DNS des hostnames `cp-01`, `worker-01`, `worker-02`
 - `kubectl` et `helm` installés localement (pour les playbooks fondation)
+- Credentials API OVH pour cert-manager (voir [Gestion des secrets](#gestion-des-secrets))
 
 ## Installer les packages sur le bastion
 ```bash
@@ -55,6 +56,32 @@ L'inventory (`ansible/inventory.yml`) définit trois groupes :
 
 La résolution des hostnames se fait par DNS. Les variables de connexion (`remote_user`, `become`, `private_key_file`) sont centralisées dans `ansible/ansible.cfg`.
 
+## Gestion des secrets
+
+Le playbook `install-foundation.yml` nécessite des credentials API OVH pour le challenge DNS Let's Encrypt. Ces secrets ne doivent **jamais** être commités dans le dépôt.
+
+### Obtenir les credentials OVH
+
+1. Aller sur [api.ovh.com/createToken](https://api.ovh.com/createToken/index.cgi?GET=/domain/zone/*&PUT=/domain/zone/*&POST=/domain/zone/*&DELETE=/domain/zone/*) et se connecter
+2. Remplir :
+   - **Application name** : `cert-manager-webhook-ovh`
+   - **Validity** : Unlimited
+   - **Rights** : `GET/PUT/POST/DELETE /domain/zone/*` (pré-rempli)
+3. Noter les 3 valeurs : `Application Key`, `Application Secret`, `Consumer Key`
+
+### Créer le fichier secrets
+
+Créer `ansible/secrets.yml` (ce fichier est dans `.gitignore`) :
+
+```yaml
+ovh_application_key: "votre-application-key"
+ovh_application_secret: "votre-application-secret"
+ovh_consumer_key: "votre-consumer-key"
+letsencrypt_email: "votre@email.fr"
+```
+
+Le fichier est passé au playbook via `-e @secrets.yml` (voir commandes ci-dessous).
+
 ## Playbooks
 
 ### `bootstrap-k8s.yml` — Bootstrap des nodes
@@ -92,7 +119,8 @@ Le playbook termine par un `kubectl get nodes` pour vérifier l'état du cluster
 
 ### `install-foundation.yml` — Composants fondation
 
-Installe les composants infrastructure sur le cluster. Nécessite le kubeconfig.
+Installe les composants infrastructure sur le cluster. Nécessite le kubeconfig et les secrets OVH.
+
 ```bash
 # Récupérer le kubeconfig d'abord
 make kubeconfig
@@ -112,8 +140,27 @@ Le playbook comporte deux plays :
 | Rôle | Description |
 |------|-------------|
 | `cilium` | CNI Cilium v1.16.5 via Helm dans `kube-system`, avec Hubble (observabilité réseau) activé |
+| `metallb` | Load Balancer bare-metal MetalLB v0.14.9 via Helm dans `metallb-system`, pool d'IP `192.168.1.140-150`, annonce L2 |
 | `longhorn` | Stockage distribué Longhorn v1.7.2 via Helm dans `longhorn-system`, 2 réplicas par volume |
+| `cert-manager` | Gestion de certificats TLS cert-manager v1.17.1 via Helm dans `cert-manager`, webhook OVH pour challenge DNS-01, ClusterIssuer Let's Encrypt production |
+| `ingress-nginx` | Ingress Controller NGINX v4.12.1 via Helm dans `ingress-nginx`, service LoadBalancer (IP attribuée par MetalLB) |
 | `argocd` | ArgoCD v7.7.11 via Helm dans `argocd`, UI exposée en NodePort 30443 |
+
+### Réseau et accès aux services
+
+L'Ingress Controller NGINX reçoit une IP externe via MetalLB (première IP du pool : `192.168.1.140`). Les services applicatifs déployés par ArgoCD seront exposés via des Ingress avec certificats TLS Let's Encrypt automatiques.
+
+| Service | FQDN | Méthode d'accès |
+|---------|------|-----------------|
+| ArgoCD | `argocd.k8s.thfx.fr` | Ingress (à migrer depuis NodePort) |
+| Harbor | `harbor.k8s.thfx.fr` | Ingress |
+| GitLab | `gitlab.k8s.thfx.fr` | Ingress |
+| Jenkins | `jenkins.k8s.thfx.fr` | Ingress |
+| SonarQube | `sonar.k8s.thfx.fr` | Ingress |
+
+**Résolution DNS** :
+- **Réseau local** : réécriture AdGuard `*.k8s.thfx.fr → 192.168.1.140`
+- **Accès externe** (démo/jury) : enregistrement DNS OVH `*.k8s.thfx.fr → IP publique` + port-forward box 80/443 → 192.168.1.140
 
 ### Accès ArgoCD
 
@@ -148,11 +195,11 @@ kubectl get nodes
 ## Commandes utiles
 
 ```bash
-make ping       # Vérifier la connectivité SSH vers les nodes
-make nodes      # Lister les nodes du cluster
-make status     # Statut complet (nodes + pods système + stockage)
-make lint       # Linter les playbooks
-make help       # Afficher toutes les commandes disponibles
+make ping               # Vérifier la connectivité SSH vers les nodes
+make nodes              # Lister les nodes du cluster
+make status             # Statut complet (nodes + pods système + stockage)
+make lint               # Linter les playbooks
+make help               # Afficher toutes les commandes disponibles
 ```
 
 ## Notes
@@ -161,3 +208,5 @@ make help       # Afficher toutes les commandes disponibles
 - **Idempotence** : les playbooks peuvent être relancés sans risque (vérifications `stat` avant les opérations destructives)
 - **SELinux** : activé en mode enforcing sur tous les nodes
 - **Firewalld** : configuré avec les ports strictement nécessaires (pas de désactivation)
+- **Secrets** : les credentials OVH sont dans `ansible/secrets.yml` (non versionné, voir `.gitignore`)
+- **Stratégie de déploiement** : Ansible gère la fondation (infra de base), ArgoCD gère les services applicatifs (GitOps)

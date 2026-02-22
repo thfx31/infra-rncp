@@ -9,6 +9,7 @@ terraform.tfvars
 
 # Ansible
 *.retry
+secrets.yml
 
 # Python
 __pycache__/
