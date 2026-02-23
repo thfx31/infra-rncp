@@ -14,6 +14,8 @@ spec:
     helm:
       valuesObject:
         controller:
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-02
           ingress:
             enabled: true
             ingressClassName: nginx
@@ -46,6 +48,10 @@ spec:
           size: 10Gi
         agent:
           enabled: true
+          # Forcer les agents de build sur worker-01 (29% RAM utilisée)
+          # worker-02 est à 84% et ne supporterait pas un build
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-01
           resources:
             requests:
               cpu: 200m

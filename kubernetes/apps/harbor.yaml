@@ -29,13 +29,17 @@ spec:
         externalURL: https://harbor.k8s.thfx.fr
         harborAdminPassword: "Ch4ng3M3!"
         # Stratégie Recreate pour les composants avec PVC RWO
-        # Évite le Multi-Attach error lors des rolling updates Longhorn
         registry:
           updateStrategy:
             type: Recreate
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-01
         jobservice:
           updateStrategy:
             type: Recreate
+        core:
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-01
         persistence:
           enabled: true
           persistentVolumeClaim:

@@ -49,6 +49,8 @@ spec:
             size: 2Gi
           # Dashboards pré-chargés utiles pour le POC
           defaultDashboardsEnabled: true
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-02
           # Datasource Prometheus auto-configurée
           sidecar:
             dashboards:
@@ -61,6 +63,8 @@ spec:
         # =============================================
         prometheus:
           prometheusSpec:
+            nodeSelector:
+              kubernetes.io/hostname: rncp-worker-02
             # Rétention courte pour le POC (économie disque)
             retention: 3d
             retentionSize: "3GB"
