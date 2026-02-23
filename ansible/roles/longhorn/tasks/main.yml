@@ -15,10 +15,20 @@
   kubernetes.core.helm:
     name: longhorn
     chart_ref: longhorn/longhorn
-    chart_version: "1.7.2"
+    chart_version: "{{ longhorn_chart_version }}"
     release_namespace: longhorn-system
     values:
       defaultSettings:
-        defaultReplicaCount: 2
+        defaultReplicaCount: "{{ longhorn_replica_count }}"
+        storageMinimalAvailablePercentage: "{{ longhorn_storage_minimal_available }}"
+        storageOverProvisioningPercentage: "{{ longhorn_storage_over_provisioning }}"
       persistence:
-        defaultClassReplicaCount: 2
+        defaultClassReplicaCount: "{{ longhorn_replica_count }}"
+
+- name: Attendre que Longhorn soit prêt
+  kubernetes.core.k8s_info:
+    kind: DaemonSet
+    name: longhorn-manager
+    namespace: longhorn-system
+    wait: true
+    wait_timeout: 300

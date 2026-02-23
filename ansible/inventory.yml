@@ -2,12 +2,12 @@ all:
   children:
     control_plane:
       hosts:
-        cp-01:
+        rncp-cp-01:
 
     workers:
       hosts:
-        worker-01:
-        worker-02:
+        rncp-worker-01:
+        rncp-worker-02:
 
     k8s_cluster:
       children:

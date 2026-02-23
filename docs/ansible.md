@@ -4,7 +4,7 @@
 
 - Python 3.x installé sur la machine de dev
 - Accès SSH par clé vers les nodes K8s (user `admintf`, sudo sans mot de passe)
-- Résolution DNS des hostnames `cp-01`, `worker-01`, `worker-02`
+- Résolution DNS des hostnames `rncp-cp-01`, `rncp-worker-01`, `rncp-worker-02`
 - `kubectl` et `helm` installés localement (pour les playbooks fondation)
 - Credentials API OVH pour cert-manager (voir [Gestion des secrets](#gestion-des-secrets))
 
@@ -50,8 +50,8 @@ L'inventory (`ansible/inventory.yml`) définit trois groupes :
 
 | Groupe | Hosts | Usage |
 |--------|-------|-------|
-| `control_plane` | `cp-01` | Node control plane Kubernetes |
-| `workers` | `worker-01`, `worker-02` | Nodes worker Kubernetes |
+| `control_plane` | `rncp-cp-01` | Node control plane Kubernetes |
+| `workers` | `rncp-worker-01`, `rncp-worker-02` | Nodes worker Kubernetes |
 | `k8s_cluster` | tous | Groupe parent pour les playbooks de bootstrap |
 
 La résolution des hostnames se fait par DNS. Les variables de connexion (`remote_user`, `become`, `private_key_file`) sont centralisées dans `ansible/ansible.cfg`.

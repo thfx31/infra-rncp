@@ -15,10 +15,57 @@
   kubernetes.core.helm:
     name: argocd
     chart_ref: argo/argo-cd
-    chart_version: "7.7.11"
+    chart_version: "{{ argocd_chart_version }}"
     release_namespace: argocd
     values:
       server:
         service:
-          type: NodePort
-          nodePortHttps: 30443
+          type: ClusterIP
+        extraArgs:
+          - --insecure
+
+- name: Attendre qu'ArgoCD server soit prêt
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    name: argocd-server
+    namespace: argocd
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Available
+      status: "True"
+
+- name: Appliquer l'Ingress ArgoCD
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ role_path }}/files/ingress.yaml"
+
+- name: Vérifier que le certificat ArgoCD est en cours d'émission
+  kubernetes.core.k8s_info:
+    kind: Certificate
+    name: argocd-tls
+    namespace: argocd
+    api_version: cert-manager.io/v1
+  register: argocd_cert
+
+- name: Info certificat ArgoCD
+  ansible.builtin.debug:
+    msg: "Certificat ArgoCD en cours d'émission. Vérifier manuellement : kubectl -n argocd get certificate"
+  when: argocd_cert.resources | length > 0
+
+- name: Appliquer l'App-of-Apps
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ role_path }}/files/app-of-apps.yaml"
+
+- name: Récupérer le mot de passe initial ArgoCD
+  kubernetes.core.k8s_info:
+    kind: Secret
+    name: argocd-initial-admin-secret
+    namespace: argocd
+  register: argocd_secret
+
+- name: Afficher le mot de passe ArgoCD
+  ansible.builtin.debug:
+    msg: "ArgoCD admin password: {{ argocd_secret.resources[0].data.password | b64decode }}"
+  when: argocd_secret.resources | length > 0

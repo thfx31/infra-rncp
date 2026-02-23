@@ -65,7 +65,7 @@ init-cluster:
 
 ## Installer les composants fondation (Cilium, Longhorn...)
 install-foundation:
-	$(ACTIVATE) && cd $(ANSIBLE_DIR) && KUBECONFIG=$(KUBECONFIG) ansible-playbook install-foundation.yml
+	$(ACTIVATE) && cd $(ANSIBLE_DIR) && KUBECONFIG=$(KUBECONFIG) ansible-playbook install-foundation.yml -e @secrets.yml
 
 # ══════════════════════════════════════════════════════════
 #  TERRAFORM
@@ -97,13 +97,13 @@ tf-output:
 #  KUBERNETES
 # ══════════════════════════════════════════════════════════
 
-.PHONY: kubeconfig nodes status
+.PHONY: kubeconfig nodes status check
 
 ## Récupérer le kubeconfig depuis le control plane
 kubeconfig:
 	@mkdir -p $(HOME)/.kube
-	scp admintf@cp-01:~/.kube/config $(KUBECONFIG)
-	@echo "✅ Kubeconfig récupéré dans $(KUBECONFIG)"
+	scp admintf@rncp-cp-01:~/.kube/config $(KUBECONFIG)
+	@echo "Kubeconfig récupéré dans $(KUBECONFIG)"
 	@echo "   export KUBECONFIG=$(KUBECONFIG)"
 
 ## Lister les nodes
@@ -120,6 +120,23 @@ status:
 	@echo ""
 	@echo "── Stockage ───────────────────────────────"
 	KUBECONFIG=$(KUBECONFIG) kubectl get sc,pv 2>/dev/null || echo "Pas encore configuré"
+
+## Vérification complète du cluster
+check:
+	@echo "── Nodes ──────────────────────────────────"
+	@KUBECONFIG=$(KUBECONFIG) kubectl get nodes
+	@echo ""
+	@echo "── Applications ArgoCD ─────────────────────"
+	@KUBECONFIG=$(KUBECONFIG) kubectl -n argocd get applications
+	@echo ""
+	@echo "── Certificats TLS ─────────────────────────"
+	@KUBECONFIG=$(KUBECONFIG) kubectl get certificate --all-namespaces
+	@echo ""
+	@echo "── Pods non Running ────────────────────────"
+	@KUBECONFIG=$(KUBECONFIG) kubectl get pods --all-namespaces --field-selector=status.phase!=Running,status.phase!=Succeeded | tail -20 || echo "Tous les pods sont OK"
+	@echo ""
+	@echo "── Mots de passe ───────────────────────────"
+	@KUBECONFIG=$(KUBECONFIG) bash get-password.sh
 
 # ══════════════════════════════════════════════════════════
 #  UTILITAIRES

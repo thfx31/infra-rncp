@@ -73,25 +73,25 @@ variable "vms" {
   }))
 
   default = {
-    cp-01 = {
+    rncp-cp-01 = {
       vmid    = 120
-      cores   = 2
-      memory  = 4096
-      disk_gb = 50
+      cores   = 4
+      memory  = 8192
+      disk_gb = 80
       ip      = "192.168.1.120"
     }
-    worker-01 = {
+    rncp-worker-01 = {
       vmid    = 121
-      cores   = 2
-      memory  = 8192
-      disk_gb = 80
+      cores   = 4
+      memory  = 10240
+      disk_gb = 150
       ip      = "192.168.1.121"
     }
-    worker-02 = {
+    rncp-worker-02 = {
       vmid    = 122
-      cores   = 2
-      memory  = 8192
-      disk_gb = 80
+      cores   = 4
+      memory  = 10240
+      disk_gb = 150
       ip      = "192.168.1.122"
     }
   }

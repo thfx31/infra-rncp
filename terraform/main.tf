@@ -11,7 +11,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   node_name = var.proxmox_node
 
   description = "POC K8s - ${each.key} | Géré par Terraform"
-  tags        = ["rncp-k8s", "terraform"]
+  tags        = ["AlmaLinux9","rncp-k8s", "terraform"]
 
   # --- Clone depuis le template cloud-init ---
   clone {

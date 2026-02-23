@@ -64,25 +64,24 @@ terraform destroy
 
 | Nom | VMID | IP | vCPU | RAM | Disque | Rôle |
 |-----|------|----|------|-----|--------|------|
-| cp-01 | 120 | 192.168.1.120 | 2 | 4 Go | 50 Go | K8s Control Plane |
-| worker-01 | 121 | 192.168.1.121 | 2 | 8 Go | 80 Go | K8s Worker |
-| worker-02 | 122 | 192.168.1.122 | 2 | 8 Go | 80 Go | K8s Worker |
+| rncp-cp-01 | 120 | 192.168.1.120 | 2 | 4 Go | 50 Go | K8s Control Plane |
+| rncp-worker-01 | 121 | 192.168.1.121 | 2 | 8 Go | 80 Go | K8s Worker |
+| rncp-worker-02 | 122 | 192.168.1.122 | 2 | 8 Go | 80 Go | K8s Worker |
 
 ### Machine d'administration (hors Terraform)
 
 | Nom | IP | vCPU | RAM | Disque | Rôle |
 |-----|-----|------|-----|--------|------|
-| bastion | 192.168.1.130 | 2 | 2 Go | 30 Go | Terraform, Ansible, kubectl, Helm |
+| rncp-bastion | 192.168.1.130 | 2 | 2 Go | 30 Go | Terraform, Ansible, kubectl, Helm |
 
-Le bastion est créé manuellement par clone du template AlmaLinux 9 dans l'UI Proxmox, puis redimensionné (Hardware → Disk → Resize).
 
 ## Connexion SSH
 
 ```bash
-ssh admintf@192.168.1.120  # cp-01
-ssh admintf@192.168.1.121  # worker-01
-ssh admintf@192.168.1.122  # worker-02
-ssh admintf@192.168.1.130  # bastion
+ssh admintf@192.168.1.120  # rncp-cp-01
+ssh admintf@192.168.1.121  # rncp-worker-01
+ssh admintf@192.168.1.122  # rncp-worker-02
+ssh admintf@192.168.1.130  # rncp-bastion
 ```
 
 ## Structure des fichiers

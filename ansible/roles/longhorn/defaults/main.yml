@@ -1,3 +1,8 @@
-#SPDX-License-Identifier: MIT-0
 ---
-# defaults file for roles/longhorn
+longhorn_chart_version: "1.7.2"
+
+# POC : 1 replica, seuils bas pour économiser l'espace
+# Production : 2-3 replicas, seuils par défaut (25% / 100%)
+longhorn_replica_count: 1
+longhorn_storage_minimal_available: 10
+longhorn_storage_over_provisioning: 300
