@@ -16,7 +16,9 @@ GitHub (infra-rncp)
             ├── harbor.yaml           ← Helm chart Harbor
             ├── gitlab.yaml           ← Helm chart GitLab
             ├── jenkins.yaml          ← Helm chart Jenkins
-            └── sonarqube.yaml        ← Helm chart SonarQube
+            ├── sonarqube.yaml        ← Helm chart SonarQube
+            ├── monitoring.yaml       ← Helm chart kube-prometheus-stack
+            └── metrics-server.yaml   ← Helm chart metrics-server
 ```
 
 **Principe** : ArgoCD surveille le dossier `kubernetes/apps/` sur la branche `main`. Tout fichier Application ajouté dans ce dossier est automatiquement déployé sur le cluster.
@@ -57,6 +59,8 @@ Chaque Application enfant pointe vers un **Helm chart distant** avec des valeurs
 | GitLab | https://gitlab.k8s.thfx.fr | `charts.gitlab.io/gitlab` | `gitlab` |
 | Jenkins | https://jenkins.k8s.thfx.fr | `charts.jenkins.io/jenkins` | `jenkins` |
 | SonarQube | https://sonarqube.k8s.thfx.fr | `sonarsource.github.io/.../sonarqube` | `sonarqube` |
+| Grafana | https://grafana.k8s.thfx.fr | `prometheus-community/.../kube-prometheus-stack` | `monitoring` |
+| Metrics Server | — (API interne) | `kubernetes-sigs/.../metrics-server` | `kube-system` |
 
 ## Flux de travail quotidien
 
@@ -102,24 +106,4 @@ Chaque service doit avoir un `secretName` TLS unique pour éviter les conflits d
 
 ## DNS
 
-Tous les sous-domaines `*.k8s.thfx.fr` pointent vers `192.168.1.140` (IP MetalLB de l'Ingress NGINX), configuré dans AdGuard Home.
-
-## Gestion Git
-
-- **Branche principale** : `main` (ArgoCD synchronise cette branche)
-- **Dépôt** : https://github.com/thfx31/infra-rncp/
-- Le dépôt est **public** (pas de credentials ArgoCD nécessaires)
-
-### Alias Git utile pour itérer rapidement
-
-```bash
-alias gaf='git add . && git commit --amend --no-edit && git push -f'
-```
-
-> Note : `--amend` réécrit l'historique. Acceptable en solo, à éviter en équipe.
-
-## Points de soutenance
-
-- **POC** : ArgoCD avec polling Git (3 min)
-- **Production** : webhook GitHub/GitLab → ArgoCD pour sync instantané
-- **Démarche itérative** : exploration manuelle → codification dans Git → déploiement GitOps automatique
+Tous les sous-domaines `*.k8s.thfx.fr` pointent vers `192.168.1.140` (IP MetalLB de l'Ingress NGINX), configuré dans AdGuard Home (homelab)

@@ -39,4 +39,10 @@ echo ""
 echo "  SonarQube : https://sonarqube.k8s.thfx.fr"
 echo "  Login     : admin / admin (changement au 1er login)"
 echo ""
+echo ""
+
+# Grafana
+echo "  Grafana   : https://grafana.k8s.thfx.fr"
+echo "  Login     : admin / Ch4ng3M3!"
+echo ""
 echo "══════════════════════════════════════════"
