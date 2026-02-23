@@ -28,6 +28,14 @@ spec:
               cert-manager.io/cluster-issuer: letsencrypt-prod
         externalURL: https://harbor.k8s.thfx.fr
         harborAdminPassword: "Ch4ng3M3!"
+        # Stratégie Recreate pour les composants avec PVC RWO
+        # Évite le Multi-Attach error lors des rolling updates Longhorn
+        registry:
+          updateStrategy:
+            type: Recreate
+        jobservice:
+          updateStrategy:
+            type: Recreate
         persistence:
           enabled: true
           persistentVolumeClaim:
