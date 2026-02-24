@@ -42,6 +42,7 @@ spec:
             - sonar:latest
             - docker-workflow:latest
             - blueocean:latest
+            - pipeline-stage-view:latest
         persistence:
           enabled: true
           storageClass: longhorn

@@ -27,6 +27,7 @@ GITLAB_URL="https://gitlab.k8s.thfx.fr"
 GITLAB_GROUP="poc-ci"
 GITLAB_PROJECT="firmware-poc"
 GITLAB_DEFAULT_BRANCH="main"
+GITLAB_ROOT_PASSWORD="LPwd*TESOadm507"
 
 # Dépôt GitHub contenant les sources du firmware
 GITHUB_REPO="https://github.com/thfx31/infra-rncp.git"
@@ -68,18 +69,18 @@ wait_for_gitlab() {
     sleep 15
 }
 
-get_root_password() {
-    step "Retrieving GitLab root password from Kubernetes secret..."
+# get_root_password() {
+#     step "Retrieving GitLab root password from Kubernetes secret..."
 
-    GITLAB_ROOT_PASSWORD=$(kubectl -n gitlab get secret gitlab-gitlab-initial-root-password \
-        -o jsonpath='{.data.password}' | base64 -d)
+#     GITLAB_ROOT_PASSWORD=$(kubectl -n gitlab get secret gitlab-gitlab-initial-root-password \
+#         -o jsonpath='{.data.password}' | base64 -d)
 
-    if [ -z "$GITLAB_ROOT_PASSWORD" ]; then
-        error "Could not retrieve GitLab root password from secret."
-    fi
+#     if [ -z "$GITLAB_ROOT_PASSWORD" ]; then
+#         error "Could not retrieve GitLab root password from secret."
+#     fi
 
-    info "Root password retrieved successfully."
-}
+#     info "Root password retrieved successfully."
+# }
 
 create_api_token() {
     step "Creating GitLab API token via Rails runner..."
@@ -166,15 +167,8 @@ create_project() {
 push_firmware_code() {
     step "Pushing firmware source code to GitLab..."
 
-    # Vérifier si le projet a déjà des commits
-    local commits
-    commits=$(gitlab_api GET "/api/v4/projects/${GITLAB_PROJECT_ID}/repository/commits?per_page=1" | \
-        python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
-
-    if [ "$commits" -gt 0 ]; then
-        info "Project already has commits, skipping push."
-        return
-    fi
+    # Toujours pousser (--force) pour refléter l'état de GitHub
+    info "Force push — syncing GitLab with GitHub sources"
 
     # Dossier temporaire
     local tmpdir
@@ -204,7 +198,15 @@ push_firmware_code() {
     local remote_url
     remote_url="${GITLAB_URL/https:\/\//https://root:${GITLAB_ROOT_PASSWORD}@}/${GITLAB_GROUP}/${GITLAB_PROJECT}.git"
     git remote add origin "$remote_url"
-    git push -u origin "${GITLAB_DEFAULT_BRANCH}" --quiet
+
+    # Désactiver la protection de branche pour autoriser le force push
+    gitlab_api DELETE "/api/v4/projects/${GITLAB_PROJECT_ID}/protected_branches/${GITLAB_DEFAULT_BRANCH}" > /dev/null 2>&1 || true
+
+    git push -u origin "${GITLAB_DEFAULT_BRANCH}" --force --quiet
+
+    # Réactiver la protection de branche
+    gitlab_api POST "/api/v4/projects/${GITLAB_PROJECT_ID}/protected_branches" \
+        --data "{\"name\":\"${GITLAB_DEFAULT_BRANCH}\",\"push_access_level\":40,\"merge_access_level\":40}" > /dev/null 2>&1 || true
 
     info "Code pushed successfully to ${GITLAB_URL}/${GITLAB_GROUP}/${GITLAB_PROJECT}"
     cd - > /dev/null
@@ -230,8 +232,8 @@ echo "=============================================="
 echo "  gitlab-init.sh — POC CI/CD"
 echo "=============================================="
 
-wait_for_gitlab
-get_root_password
+# wait_for_gitlab
+# get_root_password
 create_api_token
 create_group
 create_project
