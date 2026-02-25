@@ -175,6 +175,9 @@ spec:
                                             -f ${DOCKERFILE_PATH} \
                                             .
                                     """
+                                } else {
+                                    // Retagger l'image pullée avec le hash du commit courant
+                                    sh "docker tag ${env.FULL_IMAGE_LATEST} ${env.FULL_IMAGE_VERSIONED}"
                                 }
                             }
                         }

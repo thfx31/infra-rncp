@@ -166,6 +166,8 @@ spec:
                                             -f ${DOCKERFILE_PATH} \
                                             .
                                     """
+                                } else {
+                                    sh "docker tag ${env.FULL_IMAGE_LATEST} ${env.FULL_IMAGE_VERSIONED}"
                                 }
                             }
                         }
