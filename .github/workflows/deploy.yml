@@ -45,6 +45,7 @@ jobs:
           OVH_CONSUMER_KEY:            ${{ secrets.OVH_CONSUMER_KEY }}
           OS_AUTH_URL:                 https://auth.cloud.ovh.net/v3
           OS_TENANT_ID:                ${{ secrets.OVH_TENANT_ID }}
+          OS_USERNAME:                 ${{ secrets.OS_USERNAME }}
           OS_PASSWORD:                 ${{ secrets.OS_PASSWORD }}
           TF_VAR_os_tenant_id:         ${{ secrets.OVH_TENANT_ID }}
           TF_VAR_ssh_key_name:         rncp-ovh
