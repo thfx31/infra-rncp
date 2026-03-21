@@ -47,6 +47,7 @@ jobs:
           OS_TENANT_ID:                ${{ secrets.OVH_TENANT_ID }}
           OS_USERNAME:                 ${{ secrets.OS_USERNAME }}
           OS_PASSWORD:                 ${{ secrets.OS_PASSWORD }}
+          OS_USER_DOMAIN_NAME:         Default
           TF_VAR_os_tenant_id:         ${{ secrets.OVH_TENANT_ID }}
           TF_VAR_ssh_key_name:         rncp-ovh
         run: terraform apply -auto-approve
