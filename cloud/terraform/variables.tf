@@ -11,15 +11,15 @@ variable "cluster_name" {
 }
 
 variable "flavor_cp" {
-  description = "Flavor OVH pour le control plane"
+  description = "Flavor OVH pour le control plane (quota POC : b2-7 = 2 vCPUs / 7 Go)"
   type        = string
-  default     = "b3-8"
+  default     = "b2-7"
 }
 
 variable "flavor_worker" {
-  description = "Flavor OVH pour les workers"
+  description = "Flavor OVH pour les workers (quota POC : b2-7 = 2 vCPUs / 7 Go)"
   type        = string
-  default     = "b3-16"
+  default     = "b2-7"
 }
 
 variable "image_name" {

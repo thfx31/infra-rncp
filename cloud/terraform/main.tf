@@ -1,31 +1,19 @@
 locals {
   nodes = {
     cp = {
-      name      = "${var.cluster_name}-cp-01"
-      flavor    = var.flavor_cp
+      name       = "${var.cluster_name}-cp-01"
+      flavor     = var.flavor_cp
       private_ip = cidrhost(var.vrack_subnet, 10)  # 10.0.0.10
-      secgroups  = [
-        openstack_networking_secgroup_v2.common.name,
-        openstack_networking_secgroup_v2.control_plane.name,
-      ]
     }
     worker01 = {
-      name      = "${var.cluster_name}-worker-01"
-      flavor    = var.flavor_worker
+      name       = "${var.cluster_name}-worker-01"
+      flavor     = var.flavor_worker
       private_ip = cidrhost(var.vrack_subnet, 11)  # 10.0.0.11
-      secgroups  = [
-        openstack_networking_secgroup_v2.common.name,
-        openstack_networking_secgroup_v2.workers.name,
-      ]
     }
     worker02 = {
-      name      = "${var.cluster_name}-worker-02"
-      flavor    = var.flavor_worker
+      name       = "${var.cluster_name}-worker-02"
+      flavor     = var.flavor_worker
       private_ip = cidrhost(var.vrack_subnet, 12)  # 10.0.0.12
-      secgroups  = [
-        openstack_networking_secgroup_v2.common.name,
-        openstack_networking_secgroup_v2.workers.name,
-      ]
     }
   }
 }
@@ -47,7 +35,7 @@ resource "openstack_compute_instance_v2" "nodes" {
   image_id        = data.openstack_images_image_v2.almalinux.id
   flavor_name     = each.value.flavor
   key_pair        = data.openstack_compute_keypair_v2.ssh_key.name
-  security_groups = each.value.secgroups
+  security_groups = ["default"]
 
   metadata = {
     project     = "rncp39582"
