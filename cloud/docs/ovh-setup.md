@@ -38,8 +38,17 @@ Nécessaires pour Terraform (provider `openstack`) et Cinder CSI.
 ssh-keygen -t ed25519 -C "rncp-ovh" -f ~/.ssh/id_ed25519_ovh
 ```
 
-Enregistrer la clé publique dans l'espace client OVH :
-Public Cloud > SSH Keys > Ajouter une clé SSH
+Enregistrer la clé dans OpenStack (nom obligatoire : `rncp-ovh`, correspond à `var.ssh_key_name` dans Terraform) :
+
+```bash
+source ~/openstack-rc.sh
+export OS_REGION_NAME=SBG5   # le fichier RC donne "SBG" (legacy) — utiliser SBG5
+openstack keypair create --public-key ~/.ssh/id_ed25519_ovh.pub rncp-ovh
+```
+
+> **Note région :** le fichier OpenRC OVH indique `OS_REGION_NAME=SBG` mais l'endpoint API
+> attend `SBG5`. Toujours surcharger avec `export OS_REGION_NAME=SBG5` après avoir sourcé le fichier RC.
+> Dans Terraform, `var.ovh_region` est déjà à `SBG5` — aucune action nécessaire côté GHA.
 
 ## 5. Remote state Terraform (bucket S3 OVH)
 
@@ -70,7 +79,8 @@ L'endpoint S3 OVH est : `https://s3.<REGION>.cloud.ovh.net`
 | `OVH_APPLICATION_SECRET` | Secret app OVH | GitHub Secret |
 | `OVH_CONSUMER_KEY` | Consumer Key OVH | GitHub Secret |
 | `OVH_TENANT_ID` | Project ID OpenStack | GitHub Secret |
-| `OS_PASSWORD` | Mot de passe user OpenStack | GitHub Secret |
+| `OS_USERNAME` | Nom d'utilisateur OpenStack (format `user-XXXXXXXX`) | GitHub Secret |
+| `OS_PASSWORD` | Mot de passe user OpenStack (généré dans Users & Roles) | GitHub Secret |
 | `SSH_PRIVATE_KEY` | Clé privée ED25519 | GitHub Secret |
 | `LETSENCRYPT_EMAIL` | Email cert-manager | GitHub Secret |
 | `TF_BACKEND_ACCESS_KEY` | S3 Access Key | GitHub Secret |
