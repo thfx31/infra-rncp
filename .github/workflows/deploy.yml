@@ -56,12 +56,15 @@ jobs:
       - name: Récupérer les outputs Terraform
         id: outputs
         working-directory: ${{ env.TF_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID:     ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BACKEND_SECRET_KEY }}
         run: |
-          echo "cp_ip=$(terraform output -raw control_plane_ip_public)"   >> "$GITHUB_OUTPUT"
-          echo "w01_ip=$(terraform output -raw worker01_ip_public)"       >> "$GITHUB_OUTPUT"
-          echo "w02_ip=$(terraform output -raw worker02_ip_public)"       >> "$GITHUB_OUTPUT"
-          echo "lb_ip=$(terraform output -raw lb_ip)"                     >> "$GITHUB_OUTPUT"
-          echo "cp_private=$(terraform output -raw control_plane_ip_private)" >> "$GITHUB_OUTPUT"
+          echo "cp_ip=$(terraform output -raw control_plane_ip_public 2>/dev/null)"   >> "$GITHUB_OUTPUT"
+          echo "w01_ip=$(terraform output -raw worker01_ip_public 2>/dev/null)"       >> "$GITHUB_OUTPUT"
+          echo "w02_ip=$(terraform output -raw worker02_ip_public 2>/dev/null)"       >> "$GITHUB_OUTPUT"
+          echo "lb_ip=$(terraform output -raw lb_ip 2>/dev/null)"                     >> "$GITHUB_OUTPUT"
+          echo "cp_private=$(terraform output -raw control_plane_ip_private 2>/dev/null)" >> "$GITHUB_OUTPUT"
 
   # ansible:
   #   name: Bootstrap et init cluster
