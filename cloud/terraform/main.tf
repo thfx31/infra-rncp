@@ -27,15 +27,28 @@ data "openstack_compute_keypair_v2" "ssh_key" {
   name = var.ssh_key_name
 }
 
+# ── Ports réseau explicites (nécessaires pour l'association des floating IPs) ──
+resource "openstack_networking_port_v2" "nodes" {
+  for_each   = local.nodes
+
+  name           = "${each.value.name}-port"
+  network_id     = openstack_networking_network_v2.private.id
+  admin_state_up = true
+
+  fixed_ip {
+    subnet_id  = openstack_networking_subnet_v2.private.id
+    ip_address = each.value.private_ip
+  }
+}
+
 # ── Instances ─────────────────────────────────────────────
 resource "openstack_compute_instance_v2" "nodes" {
   for_each = local.nodes
 
-  name            = each.value.name
-  image_id        = data.openstack_images_image_v2.almalinux.id
-  flavor_name     = each.value.flavor
-  key_pair        = data.openstack_compute_keypair_v2.ssh_key.name
-  security_groups = ["default"]
+  name        = each.value.name
+  image_id    = data.openstack_images_image_v2.almalinux.id
+  flavor_name = each.value.flavor
+  key_pair    = data.openstack_compute_keypair_v2.ssh_key.name
 
   metadata = {
     project     = "rncp39582"
@@ -44,10 +57,8 @@ resource "openstack_compute_instance_v2" "nodes" {
     role        = each.key
   }
 
-  # Interface réseau privé vRack
   network {
-    name        = openstack_networking_network_v2.private.name
-    fixed_ip_v4 = each.value.private_ip
+    port = openstack_networking_port_v2.nodes[each.key].id
   }
 }
 
@@ -60,5 +71,5 @@ resource "openstack_networking_floatingip_v2" "nodes" {
 resource "openstack_networking_floatingip_associate_v2" "nodes" {
   for_each    = local.nodes
   floating_ip = openstack_networking_floatingip_v2.nodes[each.key].address
-  port_id     = openstack_compute_instance_v2.nodes[each.key].network[0].port
+  port_id     = openstack_networking_port_v2.nodes[each.key].id
 }
