@@ -28,7 +28,7 @@ Suivre le lien `validationUrl` retourné pour valider le Consumer Key.
 Nécessaires pour Terraform (provider `openstack`) et Cinder CSI.
 
 1. Espace client OVH > Public Cloud > Users & Roles
-2. Créer un utilisateur avec le rôle `Compute Operator` + `Object Store Operator`
+2. Créer un utilisateur avec les rôles : `Compute Operator` + `Network Operator` + `Object Store Operator`
 3. Télécharger le fichier OpenStack RC (v3)
 4. Récupérer : `OS_TENANT_ID` (= `OS_PROJECT_ID`) et le mot de passe
 
@@ -42,13 +42,13 @@ Enregistrer la clé dans OpenStack (nom obligatoire : `rncp-ovh`, correspond à 
 
 ```bash
 source ~/openstack-rc.sh
-export OS_REGION_NAME=SBG5   # le fichier RC donne "SBG" (legacy) — utiliser SBG5
+export OS_REGION_NAME=GRA9
 openstack keypair create --public-key ~/.ssh/id_ed25519_ovh.pub rncp-ovh
 ```
 
-> **Note région :** le fichier OpenRC OVH indique `OS_REGION_NAME=SBG` mais l'endpoint API
-> attend `SBG5`. Toujours surcharger avec `export OS_REGION_NAME=SBG5` après avoir sourcé le fichier RC.
-> Dans Terraform, `var.ovh_region` est déjà à `SBG5` — aucune action nécessaire côté GHA.
+> **Note région :** le fichier OpenRC OVH peut indiquer un nom de région différent.
+> Toujours vérifier avec `openstack keypair list` que la commande aboutit.
+> Dans Terraform, `var.ovh_region` est déjà à `GRA9` — aucune action nécessaire côté GHA.
 
 ## 5. Remote state Terraform (bucket S3 OVH)
 

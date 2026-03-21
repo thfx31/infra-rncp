@@ -50,7 +50,7 @@ pour qu'il puisse gérer ce LB.
 Fichier `defaults/main.yml` :
 ```yaml
 ovh_ccm_version: "x.x.x"   # version du cloud-controller-manager OVH
-ovh_region: "GRA11"
+ovh_region: "GRA9"
 ```
 
 ## Vérification post-déploiement

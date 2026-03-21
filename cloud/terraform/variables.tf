@@ -1,7 +1,7 @@
 variable "ovh_region" {
-  description = "Région OVH Public Cloud (ex: GRA11, SBG5, DE1)"
+  description = "Région OVH Public Cloud (ex: GRA9, SBG5, DE1)"
   type        = string
-  default     = "SBG5"
+  default     = "GRA9"
 }
 
 variable "cluster_name" {
@@ -11,15 +11,15 @@ variable "cluster_name" {
 }
 
 variable "flavor_cp" {
-  description = "Flavor OVH pour le control plane (quota POC : b2-7 = 2 vCPUs / 7 Go)"
+  description = "Flavor OVH pour le control plane"
   type        = string
-  default     = "b2-7"
+  default     = "b3-8"
 }
 
 variable "flavor_worker" {
-  description = "Flavor OVH pour les workers (quota POC : b2-7 = 2 vCPUs / 7 Go)"
+  description = "Flavor OVH pour les workers"
   type        = string
-  default     = "b2-7"
+  default     = "b3-16"
 }
 
 variable "image_name" {

@@ -1,6 +1,6 @@
 ---
 ovh_ccm_chart_version: "2.32.0"
-ovh_region: "GRA11"
+ovh_region: "GRA9"
 os_auth_url: "https://auth.cloud.ovh.net/v3"
 os_external_network_id: ""    # ID réseau externe OVH (Ext-Net) — à renseigner
 os_tenant_id: ""              # injecté via variable d'environnement

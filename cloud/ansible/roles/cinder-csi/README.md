@@ -43,7 +43,7 @@ les volumes à la demande.
 Fichier `defaults/main.yml` :
 ```yaml
 cinder_csi_version: "2.x.x"   # version du chart Helm
-ovh_region: "GRA11"            # région OVH
+ovh_region: "GRA9"            # région OVH
 storage_class_type: "classic"  # type de volume OVH (classic, high-speed, high-speed-gen2)
 ```
 

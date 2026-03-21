@@ -30,7 +30,7 @@ export TF_BACKEND_SECRET_KEY="..."
 
 | Variable | Exemple | Description |
 |----------|---------|-------------|
-| `region` | `GRA11` | Région OVH |
+| `region` | `GRA9` | Région OVH |
 | `flavor_cp` | `b3-8` | Flavor control plane (4 vCPUs / 8 Go) |
 | `flavor_worker` | `b3-16` | Flavor workers (8 vCPUs / 16 Go) |
 | `ssh_key_name` | `rncp-ovh` | Nom clé SSH dans OVH |
@@ -41,7 +41,7 @@ export TF_BACKEND_SECRET_KEY="..."
 Pour les surcharger localement, créer un fichier `terraform/terraform.tfvars`
 (gitignored) :
 ```hcl
-region       = "GRA11"
+region       = "GRA9"
 cluster_name = "rncp-ovh"
 ```
 
