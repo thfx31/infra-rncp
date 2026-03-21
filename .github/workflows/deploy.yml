@@ -106,7 +106,7 @@ jobs:
                     ${{ needs.terraform.outputs.w02_ip }}; do
             echo "Attente SSH $ip..."
             timeout 120 bash -c "until ssh -o StrictHostKeyChecking=no \
-              -i ~/.ssh/id_ed25519 admintf@$ip 'true' 2>/dev/null; do sleep 5; done"
+              -i ~/.ssh/id_ed25519 almalinux@$ip 'true' 2>/dev/null; do sleep 5; done"
           done
 
       - name: Bootstrap OS (containerd, kubeadm)
