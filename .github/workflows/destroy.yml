@@ -1,0 +1,47 @@
+name: Destroy K8s cluster (OVH)
+
+on:
+  workflow_dispatch:
+
+# Protection : approbation manuelle requise via l'environment "production"
+# Configurer dans : Settings > Environments > production > Required reviewers
+environment: production
+
+env:
+  TF_DIR: cloud/terraform
+
+jobs:
+  destroy:
+    name: Détruire toutes les ressources OVH
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID:     ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BACKEND_SECRET_KEY }}
+        run: terraform init
+
+      - name: Terraform destroy
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID:       ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY:   ${{ secrets.TF_BACKEND_SECRET_KEY }}
+          OVH_ENDPOINT:            ovh-eu
+          OVH_APPLICATION_KEY:     ${{ secrets.OVH_APPLICATION_KEY }}
+          OVH_APPLICATION_SECRET:  ${{ secrets.OVH_APPLICATION_SECRET }}
+          OVH_CONSUMER_KEY:        ${{ secrets.OVH_CONSUMER_KEY }}
+          OS_AUTH_URL:             https://auth.cloud.ovh.net/v3
+          OS_TENANT_ID:            ${{ secrets.OVH_TENANT_ID }}
+          OS_PASSWORD:             ${{ secrets.OS_PASSWORD }}
+          TF_VAR_os_tenant_id:     ${{ secrets.OVH_TENANT_ID }}
+          TF_VAR_ssh_key_name:     rncp-ovh
+        run: terraform destroy -auto-approve
