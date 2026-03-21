@@ -1,0 +1,152 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 72.3.0
+    helm:
+      valuesObject:
+        # =============================================
+        # GRAFANA
+        # =============================================
+        grafana:
+          enabled: true
+          adminPassword: "Ch4ng3M3!"
+          # Grafana doit connaître son URL publique pour générer les bons chemins d'assets
+          grafana.ini:
+            server:
+              root_url: https://grafana.k8s.thfx.fr
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+              nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
+              nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+            hosts:
+              - grafana.k8s.thfx.fr
+            tls:
+              - secretName: grafana-tls
+                hosts:
+                  - grafana.k8s.thfx.fr
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          persistence:
+            enabled: true
+            storageClassName: longhorn
+            size: 2Gi
+          # Dashboards pré-chargés utiles pour le POC
+          defaultDashboardsEnabled: true
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-02
+          # Datasource Prometheus auto-configurée
+          sidecar:
+            dashboards:
+              enabled: true
+            datasources:
+              enabled: true
+
+        # =============================================
+        # PROMETHEUS
+        # =============================================
+        prometheus:
+          prometheusSpec:
+            nodeSelector:
+              kubernetes.io/hostname: rncp-worker-02
+            # Rétention courte pour le POC (économie disque)
+            retention: 3d
+            retentionSize: "3GB"
+            resources:
+              requests:
+                cpu: 200m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: longhorn
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 5Gi
+            # Réduire la fréquence de scrape pour limiter la charge
+            scrapeInterval: 60s
+            evaluationInterval: 60s
+
+        # =============================================
+        # ALERTMANAGER — désactivé pour le POC
+        # =============================================
+        alertmanager:
+          enabled: false
+
+        # =============================================
+        # NODE EXPORTER — métriques OS des nodes
+        # =============================================
+        nodeExporter:
+          enabled: true
+        prometheus-node-exporter:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+
+        # =============================================
+        # KUBE-STATE-METRICS — métriques objets K8s
+        # =============================================
+        kubeStateMetrics:
+          enabled: true
+        kube-state-metrics:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+
+        # =============================================
+        # COMPOSANTS OPTIONNELS — désactivés
+        # =============================================
+        # Le chart installe un opérateur Prometheus
+        prometheusOperator:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+
+        # Désactiver les composants non nécessaires
+        kubeProxy:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+        kubeScheduler:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

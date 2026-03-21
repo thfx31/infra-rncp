@@ -1,0 +1,9 @@
+---
+certmanager_chart_version: "1.17.1"
+certmanager_namespace: cert-manager
+letsencrypt_email: ""
+ovh_endpoint: "ovh-eu"
+ovh_application_key: ""
+ovh_application_secret: ""
+ovh_consumer_key: ""
+dns_zone: "thfx.fr"

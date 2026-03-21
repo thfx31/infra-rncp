@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: harbor
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://helm.goharbor.io
+    chart: harbor
+    targetRevision: 1.16.2
+    helm:
+      valuesObject:
+        expose:
+          type: ingress
+          tls:
+            enabled: true
+            certSource: secret
+            secret:
+              secretName: harbor-tls
+          ingress:
+            hosts:
+              core: harbor.k8s.thfx.fr
+            className: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+        externalURL: https://harbor.k8s.thfx.fr
+        harborAdminPassword: "Ch4ng3M3!"
+        # Stratégie Recreate pour les composants avec PVC RWO
+        registry:
+          updateStrategy:
+            type: Recreate
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-01
+        jobservice:
+          updateStrategy:
+            type: Recreate
+        core:
+          nodeSelector:
+            kubernetes.io/hostname: rncp-worker-01
+        persistence:
+          enabled: true
+          persistentVolumeClaim:
+            registry:
+              storageClass: longhorn
+              size: 10Gi
+            database:
+              storageClass: longhorn
+              size: 2Gi
+            redis:
+              storageClass: longhorn
+              size: 1Gi
+            jobservice:
+              jobLog:
+                storageClass: longhorn
+                size: 1Gi
+            trivy:
+              storageClass: longhorn
+              size: 2Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: harbor
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
