@@ -31,9 +31,10 @@ data "openstack_compute_keypair_v2" "ssh_key" {
 resource "openstack_networking_port_v2" "nodes" {
   for_each   = local.nodes
 
-  name           = "${each.value.name}-port"
-  network_id     = openstack_networking_network_v2.private.id
-  admin_state_up = true
+  name                  = "${each.value.name}-port"
+  network_id            = openstack_networking_network_v2.private.id
+  admin_state_up        = true
+  port_security_enabled = false
 
   fixed_ip {
     subnet_id  = openstack_networking_subnet_v2.private.id
