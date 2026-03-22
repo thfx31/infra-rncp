@@ -81,6 +81,9 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
+      - name: Rendre inventory.py exécutable
+        run: chmod +x ${{ env.ANSIBLE_DIR }}/inventory.py
+
       - name: Générer tf_outputs.json
         run: |
           cat > ${{ env.ANSIBLE_DIR }}/tf_outputs.json <<'EOF'
