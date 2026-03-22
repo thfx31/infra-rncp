@@ -45,12 +45,12 @@ spec:
               memory: 256Mi
           persistence:
             enabled: true
-            storageClassName: longhorn
+            storageClassName: scw-bssd
             size: 2Gi
           # Dashboards pré-chargés utiles pour le POC
           defaultDashboardsEnabled: true
           nodeSelector:
-            kubernetes.io/hostname: rncp-worker-02
+            kubernetes.io/hostname: rncp-scw-worker-02
           # Datasource Prometheus auto-configurée
           sidecar:
             dashboards:
@@ -64,7 +64,7 @@ spec:
         prometheus:
           prometheusSpec:
             nodeSelector:
-              kubernetes.io/hostname: rncp-worker-02
+              kubernetes.io/hostname: rncp-scw-worker-02
             # Rétention courte pour le POC (économie disque)
             retention: 3d
             retentionSize: "3GB"
@@ -77,7 +77,7 @@ spec:
             storageSpec:
               volumeClaimTemplate:
                 spec:
-                  storageClassName: longhorn
+                  storageClassName: scw-bssd
                   accessModes: ["ReadWriteOnce"]
                   resources:
                     requests:

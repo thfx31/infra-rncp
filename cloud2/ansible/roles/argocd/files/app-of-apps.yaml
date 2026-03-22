@@ -7,8 +7,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/thfx31/infra-rncp.git
-    targetRevision: feat/cloud_k8s
-    path: cloud/kubernetes/apps
+    targetRevision: main
+    path: cloud2/kubernetes/apps
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

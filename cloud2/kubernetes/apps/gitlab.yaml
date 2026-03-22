@@ -53,7 +53,7 @@ spec:
             minReplicas: 1
             maxReplicas: 1
             nodeSelector:
-              kubernetes.io/hostname: rncp-worker-01
+              kubernetes.io/hostname: rncp-scw-worker-01
             ingress:
               tls:
                 secretName: gitlab-webservice-tls
@@ -67,7 +67,7 @@ spec:
             minReplicas: 1
             maxReplicas: 1
             nodeSelector:
-              kubernetes.io/hostname: rncp-worker-01
+              kubernetes.io/hostname: rncp-scw-worker-01
             resources:
               requests:
                 cpu: 200m
@@ -82,7 +82,7 @@ spec:
               limits:
                 memory: 1Gi
             persistence:
-              storageClass: longhorn
+              storageClass: scw-bssd
               size: 10Gi
           toolbox:
             resources:
@@ -96,19 +96,19 @@ spec:
             maxReplicas: 1
         postgresql:
           persistence:
-            storageClass: longhorn
+            storageClass: scw-bssd
             size: 5Gi
         redis:
           master:
             persistence:
-              storageClass: longhorn
+              storageClass: scw-bssd
               size: 2Gi
         minio:
           ingress:
             tls:
               secretName: gitlab-minio-tls
           persistence:
-            storageClass: longhorn
+            storageClass: scw-bssd
             size: 5Gi
   destination:
     server: https://kubernetes.default.svc
