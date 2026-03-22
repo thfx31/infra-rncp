@@ -42,6 +42,10 @@ Guide de mise en place du cluster K8s RNCP sur OVH Public Cloud.
 
 10. **[demo-runbook.md](demo-runbook.md)** — Scénario de démonstration complet.
 
+### Référence
+
+- **[openstack-cli.md](openstack-cli.md)** — Commandes OpenStack CLI utiles (debug, nettoyage, gestion des ressources).
+
 ---
 
 ## Séquence de déploiement résumée

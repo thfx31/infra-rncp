@@ -30,7 +30,7 @@ ansible -i inventory.py k8s_cluster -m ping
 ## Connexion SSH
 
 `ansible.cfg` utilise :
-- **User** : `ubuntu` (image Ubuntu OVH par défaut — différent de `admintf` dans proxmox/)
+- **User** : `almalinux` (user par défaut de l'image AlmaLinux 9 OVH — différent de `admintf` dans proxmox/)
 - **Clé** : `~/.ssh/id_ed25519` (ou variable `SSH_PRIVATE_KEY` dans GHA)
 
 Dans GitHub Actions, la clé est écrite dans un fichier temporaire depuis le secret `SSH_PRIVATE_KEY`.
@@ -56,7 +56,7 @@ lisent directement les variables d'environnement `OVH_*` et `OS_*`.
 | Aspect | proxmox/ | cloud/ |
 |--------|----------|--------|
 | Inventaire | `inventory.yml` statique | `inventory.py` dynamique |
-| User SSH | `admintf` | `admintf` (identique) |
+| User SSH | `admintf` | `almalinux` (user OVH AlmaLinux 9) |
 | Secrets | `secrets.yml` (gitignored) | Variables d'environnement |
 | Rôle stockage | `longhorn` | `cinder-csi` |
 | Rôle LB | `metallb` | `ovh-lb` |

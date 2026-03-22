@@ -15,21 +15,21 @@
   when: not kubeadm_already_init.stat.exists
   register: kubeadm_init
 
-# ── Kubeconfig pour admintf ──────────────────────────────
+# ── Kubeconfig pour l'utilisateur courant ────────────────
 - name: Créer le répertoire .kube
   ansible.builtin.file:
-    path: /home/admintf/.kube
+    path: "/home/{{ ansible_user }}/.kube"
     state: directory
-    owner: admintf
-    group: admintf
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0755'
 
 - name: Copier le kubeconfig
   ansible.builtin.copy:
     src: /etc/kubernetes/admin.conf
-    dest: /home/admintf/.kube/config
-    owner: admintf
-    group: admintf
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0600'
     remote_src: true
 
