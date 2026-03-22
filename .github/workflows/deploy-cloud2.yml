@@ -91,6 +91,9 @@ jobs:
           }
           EOF
 
+      - name: Vérifier tf_outputs.json
+        run: cat ${{ env.ANSIBLE_DIR }}/tf_outputs.json
+
       - name: Attendre que SSH et cloud-init soient prêts
         run: |
           for ip in ${{ needs.terraform.outputs.cp_ip }} \

@@ -30,10 +30,18 @@
         src: /etc/kubernetes/admin.conf
       register: kubeconfig_b64
 
-    - name: Écrire le kubeconfig localement
+    - name: Créer le répertoire .kube sur le runner
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.kube"
+        state: directory
+        mode: '0700'
+      delegate_to: localhost
+      become: false
+
+    - name: Écrire le kubeconfig localement (~/.kube/config)
       ansible.builtin.copy:
         content: "{{ kubeconfig_b64.content | b64decode }}"
-        dest: "{{ playbook_dir }}/../kubeconfig.yml"
+        dest: "{{ lookup('env', 'HOME') }}/.kube/config"
         mode: '0600'
       delegate_to: localhost
       become: false
