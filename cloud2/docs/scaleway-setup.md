@@ -53,12 +53,9 @@ scw init
 scw object bucket create name=terraform-state-rncp region=fr-par
 ```
 
-Récupérer les credentials S3 pour le bucket :
-**Console → Object Storage → Credentials S3 → Generate credentials**
-- `Access Key` → `TF_BACKEND_ACCESS_KEY`
-- `Secret Key` → `TF_BACKEND_SECRET_KEY`
-
-> Note : les credentials S3 Object Storage sont distincts des API Keys IAM.
+Les credentials S3 sont les **mêmes que les API Keys IAM** (section 3) — pas besoin
+d'en générer de nouveaux. Utiliser le même Access Key / Secret Key pour
+`TF_BACKEND_ACCESS_KEY` / `TF_BACKEND_SECRET_KEY`.
 
 ## 5. Vérifier l'image AlmaLinux disponible
 
@@ -77,9 +74,9 @@ Mettre à jour `var.image` dans `terraform/variables.tf` si le nom diffère de `
 | `SCW_DEFAULT_PROJECT_ID` | ID du projet Scaleway | Project Settings |
 | `SSH_PRIVATE_KEY` | Clé privée ED25519 | `~/.ssh/id_ed25519` |
 | `LETSENCRYPT_EMAIL` | Email pour cert-manager | — |
-| `TF_BACKEND_ACCESS_KEY` | S3 Access Key Object Storage | Object Storage → Credentials |
-| `TF_BACKEND_SECRET_KEY` | S3 Secret Key Object Storage | Object Storage → Credentials |
-| `OVH_APPLICATION_KEY` | API OVH (DNS challenge yplank.fr) | [ovh-setup.md OVH](../../cloud/docs/ovh-setup.md) |
+| `TF_BACKEND_ACCESS_KEY` | S3 Access Key (= SCW_ACCESS_KEY) | IAM → API Keys |
+| `TF_BACKEND_SECRET_KEY` | S3 Secret Key (= SCW_SECRET_KEY) | IAM → API Keys |
+| `OVH_APPLICATION_KEY` | API OVH (DNS challenge yplank.fr) | [ovh-api.md](ovh-api.md) |
 | `OVH_APPLICATION_SECRET` | API OVH | idem |
 | `OVH_CONSUMER_KEY` | API OVH | idem |
 
