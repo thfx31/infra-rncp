@@ -104,16 +104,14 @@ jobs:
           for ip in ${{ needs.terraform.outputs.cp_ip }} \
                     ${{ needs.terraform.outputs.w01_ip }} \
                     ${{ needs.terraform.outputs.w02_ip }}; do
-            echo "Attente SSH $ip..."
-            timeout 300 bash -c "until ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
-              -i ~/.ssh/id_ed25519 almalinux@$ip 'true'; do
-              echo 'Echec SSH, retry dans 10s...'
+            echo "Attente SSH + cloud-init $ip..."
+            timeout 360 bash -c "until ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
+              -i ~/.ssh/id_ed25519 almalinux@$ip \
+              'test -f /var/lib/cloud/instance/boot-finished'; do
+              echo 'En attente (SSH ou cloud-init)...'
               sleep 10
             done"
-            echo "Attente cloud-init $ip..."
-            timeout 300 ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
-              -i ~/.ssh/id_ed25519 almalinux@$ip \
-              'sudo cloud-init status --wait || true'
+            echo "cloud-init terminé sur $ip"
           done
 
       - name: Bootstrap OS (containerd, kubeadm)
