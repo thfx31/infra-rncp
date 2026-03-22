@@ -23,6 +23,15 @@
     state: present
     disable_excludes: kubernetes
 
+# ── Cloud provider externe ───────────────────────────────
+- name: Configurer kubelet pour cloud provider externe
+  ansible.builtin.lineinfile:
+    path: /etc/sysconfig/kubelet
+    regexp: '^KUBELET_EXTRA_ARGS='
+    line: 'KUBELET_EXTRA_ARGS=--cloud-provider=external'
+    create: true
+    mode: '0644'
+
 # ── Démarrage kubelet ────────────────────────────────────
 - name: Activer kubelet (démarrera après kubeadm init/join)
   ansible.builtin.systemd:

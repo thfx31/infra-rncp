@@ -30,23 +30,23 @@ def build_inventory(outputs):
     return {
         "_meta": {
             "hostvars": {
-                "scw-cp-01": {
+                "rncp-scw-cp-01": {
                     "ansible_host": cp_ip,
                     "private_ip":   cp_ip,
                 },
-                "scw-worker-01": {
+                "rncp-scw-worker-01": {
                     "ansible_host": w01_ip,
                 },
-                "scw-worker-02": {
+                "rncp-scw-worker-02": {
                     "ansible_host": w02_ip,
                 },
             }
         },
         "control_plane": {
-            "hosts": ["scw-cp-01"],
+            "hosts": ["rncp-scw-cp-01"],
         },
         "workers": {
-            "hosts": ["scw-worker-01", "scw-worker-02"],
+            "hosts": ["rncp-scw-worker-01", "rncp-scw-worker-02"],
         },
         "k8s_cluster": {
             "children": ["control_plane", "workers"],
