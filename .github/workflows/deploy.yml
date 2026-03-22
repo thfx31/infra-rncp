@@ -127,13 +127,15 @@ jobs:
       - name: Installer la fondation (Cilium, ArgoCD, Cinder CSI, OVH LB)
         working-directory: ${{ env.ANSIBLE_DIR }}
         env:
-          OVH_APPLICATION_KEY:         ${{ secrets.OVH_APPLICATION_KEY }}
-          OVH_APPLICATION_SECRET:      ${{ secrets.OVH_APPLICATION_SECRET }}
-          OVH_CONSUMER_KEY:            ${{ secrets.OVH_CONSUMER_KEY }}
-          LETSENCRYPT_EMAIL:           ${{ secrets.LETSENCRYPT_EMAIL }}
-          OS_TENANT_ID:                ${{ secrets.OVH_TENANT_ID }}
-          OS_APPLICATION_CREDENTIAL_ID:     ${{ secrets.OVH_APPLICATION_KEY }}
-          OS_APPLICATION_CREDENTIAL_SECRET: ${{ secrets.OVH_APPLICATION_SECRET }}
+          OVH_APPLICATION_KEY:    ${{ secrets.OVH_APPLICATION_KEY }}
+          OVH_APPLICATION_SECRET: ${{ secrets.OVH_APPLICATION_SECRET }}
+          OVH_CONSUMER_KEY:       ${{ secrets.OVH_CONSUMER_KEY }}
+          LETSENCRYPT_EMAIL:      ${{ secrets.LETSENCRYPT_EMAIL }}
+          OS_AUTH_URL:            https://auth.cloud.ovh.net/v3
+          OS_TENANT_ID:           ${{ secrets.OVH_TENANT_ID }}
+          OS_USERNAME:            ${{ secrets.OS_USERNAME }}
+          OS_PASSWORD:            ${{ secrets.OS_PASSWORD }}
+          OS_REGION_NAME:         GRA9
         run: |
           ${{ env.VENV }}/bin/ansible-playbook \
             -i inventory.py install-foundation.yml \

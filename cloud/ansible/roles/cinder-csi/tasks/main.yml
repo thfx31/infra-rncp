@@ -11,6 +11,25 @@
     kind: Namespace
     state: present
 
+- name: Créer le secret cloud-config pour Cinder CSI
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cloud-config
+        namespace: kube-system
+      stringData:
+        cloud.conf: |
+          [Global]
+          auth-url={{ lookup('env', 'OS_AUTH_URL') }}
+          username={{ lookup('env', 'OS_USERNAME') }}
+          password={{ lookup('env', 'OS_PASSWORD') }}
+          tenant-id={{ lookup('env', 'OS_TENANT_ID') }}
+          domain-name=Default
+          region={{ lookup('env', 'OS_REGION_NAME') | default('GRA9') }}
+
 - name: Installer cinder-csi-plugin
   kubernetes.core.helm:
     name: cinder-csi-plugin
