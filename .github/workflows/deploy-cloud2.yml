@@ -1,0 +1,145 @@
+name: Deploy K8s cluster (Scaleway)
+
+on:
+  workflow_dispatch:
+
+env:
+  TF_DIR:       cloud2/terraform
+  ANSIBLE_DIR:  cloud2/ansible
+  VENV:         /opt/venv/ansible
+
+jobs:
+  terraform:
+    name: Provisionner les instances Scaleway
+    runs-on: ubuntu-latest
+    outputs:
+      cp_ip:      ${{ steps.outputs.outputs.cp_ip }}
+      w01_ip:     ${{ steps.outputs.outputs.w01_ip }}
+      w02_ip:     ${{ steps.outputs.outputs.w02_ip }}
+      cp_private: ${{ steps.outputs.outputs.cp_private }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init (backend S3 Scaleway)
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID:     ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BACKEND_SECRET_KEY }}
+        run: terraform init
+
+      - name: Terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID:          ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY:      ${{ secrets.TF_BACKEND_SECRET_KEY }}
+          SCW_ACCESS_KEY:             ${{ secrets.SCW_ACCESS_KEY }}
+          SCW_SECRET_KEY:             ${{ secrets.SCW_SECRET_KEY }}
+          SCW_DEFAULT_PROJECT_ID:     ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          SCW_DEFAULT_REGION:         fr-par
+          SCW_DEFAULT_ZONE:           fr-par-2
+          TF_VAR_scw_region:          fr-par
+          TF_VAR_scw_zone:            fr-par-2
+        run: terraform apply -auto-approve
+
+      - name: Récupérer les outputs Terraform
+        id: outputs
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID:     ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BACKEND_SECRET_KEY }}
+          SCW_ACCESS_KEY:        ${{ secrets.SCW_ACCESS_KEY }}
+          SCW_SECRET_KEY:        ${{ secrets.SCW_SECRET_KEY }}
+        run: |
+          echo "cp_ip=$(terraform output -raw control_plane_ip_public)"      >> "$GITHUB_OUTPUT"
+          echo "w01_ip=$(terraform output -raw worker01_ip_public)"          >> "$GITHUB_OUTPUT"
+          echo "w02_ip=$(terraform output -raw worker02_ip_public)"          >> "$GITHUB_OUTPUT"
+          echo "cp_private=$(terraform output -raw control_plane_ip_private)" >> "$GITHUB_OUTPUT"
+
+  ansible:
+    name: Bootstrap et init cluster
+    runs-on: ubuntu-latest
+    needs: terraform
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Ansible
+        run: |
+          python3 -m venv ${{ env.VENV }}
+          ${{ env.VENV }}/bin/pip install --upgrade pip
+          ${{ env.VENV }}/bin/pip install -r ${{ env.ANSIBLE_DIR }}/requirements.txt
+          ${{ env.VENV }}/bin/ansible-galaxy collection install \
+            -r ${{ env.ANSIBLE_DIR }}/requirements.yml
+
+      - name: Configurer la clé SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Générer tf_outputs.json
+        run: |
+          cat > ${{ env.ANSIBLE_DIR }}/tf_outputs.json <<'EOF'
+          {
+            "control_plane_ip_public":  { "value": "${{ needs.terraform.outputs.cp_ip }}" },
+            "control_plane_ip_private": { "value": "${{ needs.terraform.outputs.cp_private }}" },
+            "worker01_ip_public":       { "value": "${{ needs.terraform.outputs.w01_ip }}" },
+            "worker02_ip_public":       { "value": "${{ needs.terraform.outputs.w02_ip }}" }
+          }
+          EOF
+
+      - name: Attendre que SSH et cloud-init soient prêts
+        run: |
+          for ip in ${{ needs.terraform.outputs.cp_ip }} \
+                    ${{ needs.terraform.outputs.w01_ip }} \
+                    ${{ needs.terraform.outputs.w02_ip }}; do
+            echo "Attente SSH + cloud-init $ip..."
+            timeout 360 bash -c "until ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
+              -i ~/.ssh/id_ed25519 almalinux@$ip \
+              'test -f /var/lib/cloud/instance/boot-finished'; do
+              echo 'En attente (SSH ou cloud-init)...'
+              sleep 10
+            done"
+            echo "cloud-init terminé sur $ip"
+          done
+
+      - name: Bootstrap OS (containerd, kubeadm)
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: |
+          ${{ env.VENV }}/bin/ansible-playbook \
+            -i inventory.py bootstrap-k8s.yml \
+            --timeout 30
+
+      - name: Initialiser le cluster Kubernetes
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        run: |
+          ${{ env.VENV }}/bin/ansible-playbook \
+            -i inventory.py init-cluster.yml \
+            --timeout 30
+
+      - name: Installer la fondation (Cilium, Scaleway CCM/CSI, cert-manager, ArgoCD)
+        working-directory: ${{ env.ANSIBLE_DIR }}
+        env:
+          SCW_ACCESS_KEY:         ${{ secrets.SCW_ACCESS_KEY }}
+          SCW_SECRET_KEY:         ${{ secrets.SCW_SECRET_KEY }}
+          SCW_DEFAULT_PROJECT_ID: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          SCW_DEFAULT_REGION:     fr-par
+          SCW_DEFAULT_ZONE:       fr-par-2
+          OVH_APPLICATION_KEY:    ${{ secrets.OVH_APPLICATION_KEY }}
+          OVH_APPLICATION_SECRET: ${{ secrets.OVH_APPLICATION_SECRET }}
+          OVH_CONSUMER_KEY:       ${{ secrets.OVH_CONSUMER_KEY }}
+          LETSENCRYPT_EMAIL:      ${{ secrets.LETSENCRYPT_EMAIL }}
+        run: |
+          ${{ env.VENV }}/bin/ansible-playbook \
+            -i inventory.py install-foundation.yml \
+            --timeout 30 \
+            -e ovh_application_key="${OVH_APPLICATION_KEY}" \
+            -e ovh_application_secret="${OVH_APPLICATION_SECRET}" \
+            -e ovh_consumer_key="${OVH_CONSUMER_KEY}" \
+            -e letsencrypt_email="${LETSENCRYPT_EMAIL}"

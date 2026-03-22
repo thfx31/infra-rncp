@@ -1,0 +1,49 @@
+---
+- name: Ajouter le repo Helm Scaleway
+  kubernetes.core.helm_repository:
+    name: scaleway
+    repo_url: https://scaleway.github.io/helm-charts
+
+- name: Créer le secret credentials Scaleway pour CSI
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: scaleway-secret
+        namespace: kube-system
+      type: Opaque
+      stringData:
+        SCW_ACCESS_KEY: "{{ lookup('env', 'SCW_ACCESS_KEY') }}"
+        SCW_SECRET_KEY: "{{ lookup('env', 'SCW_SECRET_KEY') }}"
+        SCW_DEFAULT_PROJECT_ID: "{{ lookup('env', 'SCW_DEFAULT_PROJECT_ID') }}"
+        SCW_DEFAULT_REGION: "{{ lookup('env', 'SCW_DEFAULT_REGION') }}"
+        SCW_DEFAULT_ZONE: "{{ lookup('env', 'SCW_DEFAULT_ZONE') }}"
+
+- name: Installer scaleway-csi
+  kubernetes.core.helm:
+    name: scaleway-csi
+    chart_ref: scaleway/scaleway-csi
+    chart_version: "{{ scaleway_csi_chart_version }}"
+    release_namespace: kube-system
+    values:
+      storageClass:
+        defaultClass: true
+      node:
+        driver:
+          volumeType: b_ssd
+    wait: true
+    wait_timeout: "300s"
+
+- name: Vérifier que scaleway-csi est prêt
+  kubernetes.core.k8s_info:
+    kind: DaemonSet
+    namespace: kube-system
+    name: scaleway-csi-node
+    wait: true
+    wait_timeout: 120
+    wait_condition:
+      type: Available
+      status: "True"
+  ignore_errors: true

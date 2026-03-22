@@ -72,6 +72,25 @@ Ce que fait le workflow :
 2. Affiche : nodes, ArgoCD apps, certificats TLS, pods non Running
 3. Affiche les mots de passe des services
 
+## Récupérer le kubeconfig en local
+
+Après un déploiement réussi, récupérer le kubeconfig pour administrer le cluster depuis ta machine :
+
+```bash
+# Remplacer <CP_IP> par l'IP publique du control plane (visible dans les logs GHA)
+ssh -i ~/.ssh/id_ed25519 almalinux@<CP_IP> "sudo cat /etc/kubernetes/admin.conf" > ~/.kube/config-ovh
+export KUBECONFIG=~/.kube/config-ovh
+kubectl get nodes
+```
+
+> Note : `scp` ne fonctionne pas directement car le fichier appartient à root.
+> Le `sudo cat` via SSH est la méthode correcte.
+
+Pour ne pas avoir à re-exporter à chaque session, ajouter dans `~/.bashrc` ou `~/.zshrc` :
+```bash
+export KUBECONFIG=~/.kube/config-ovh
+```
+
 ## Lancer via la CLI gh
 
 ```bash
