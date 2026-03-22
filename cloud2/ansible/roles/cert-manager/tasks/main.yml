@@ -36,6 +36,21 @@
       type: Available
       status: "True"
 
+- name: Attendre que le webhook cert-manager soit prêt
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    namespace: "{{ certmanager_namespace }}"
+    name: cert-manager-webhook
+    wait: true
+    wait_timeout: 120
+    wait_condition:
+      type: Available
+      status: "True"
+
+- name: Laisser le webhook cert-manager se stabiliser
+  ansible.builtin.pause:
+    seconds: 30
+
 - name: Créer le secret OVH API pour le challenge DNS
   kubernetes.core.k8s:
     state: present
