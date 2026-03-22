@@ -24,9 +24,6 @@
   connection: local
   gather_facts: false
   become: false
-  environment:
-    KUBECONFIG: "{{ playbook_dir }}/../kubeconfig.yml"
-
   roles:
     - cilium
     - scaleway-ccm
