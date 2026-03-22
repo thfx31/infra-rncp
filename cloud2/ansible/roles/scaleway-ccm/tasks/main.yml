@@ -23,7 +23,7 @@
 - name: Déployer le Scaleway CCM via manifest officiel
   kubernetes.core.k8s:
     state: present
-    src: "https://raw.githubusercontent.com/scaleway/scaleway-cloud-controller-manager/master/releases/scaleway-cloud-controller-manager.yaml"
+    src: "https://raw.githubusercontent.com/scaleway/scaleway-cloud-controller-manager/master/examples/k8s-scaleway-ccm-latest.yml"
 
 - name: Attendre que le CCM soit prêt
   kubernetes.core.k8s_info:
