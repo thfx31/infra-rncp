@@ -20,6 +20,8 @@
     values:
       crds:
         enabled: true
+      startupapicheck:
+        enabled: false
     wait: true
     wait_timeout: "300s"
 

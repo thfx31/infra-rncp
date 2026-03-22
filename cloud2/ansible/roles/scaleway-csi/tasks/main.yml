@@ -22,14 +22,17 @@
     wait: true
     wait_timeout: "300s"
 
-- name: Vérifier que scaleway-csi est prêt
+- name: Vérifier que scaleway-csi-node est prêt
   kubernetes.core.k8s_info:
     kind: DaemonSet
     namespace: kube-system
     name: scaleway-csi-node
-    wait: true
-    wait_timeout: 120
-    wait_condition:
-      type: Available
-      status: "True"
+  register: csi_node_ds
+  until: >
+    csi_node_ds.resources | length > 0 and
+    csi_node_ds.resources[0].status.numberReady is defined and
+    csi_node_ds.resources[0].status.numberReady ==
+    csi_node_ds.resources[0].status.desiredNumberScheduled
+  retries: 20
+  delay: 10
   ignore_errors: true
