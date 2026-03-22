@@ -23,17 +23,16 @@ def load_tf_outputs():
 
 
 def build_inventory(outputs):
-    cp_ip      = outputs["control_plane_ip_public"]["value"]
-    w01_ip     = outputs["worker01_ip_public"]["value"]
-    w02_ip     = outputs["worker02_ip_public"]["value"]
-    cp_private = outputs["control_plane_ip_private"]["value"]
+    cp_ip  = outputs["control_plane_ip_public"]["value"]
+    w01_ip = outputs["worker01_ip_public"]["value"]
+    w02_ip = outputs["worker02_ip_public"]["value"]
 
     return {
         "_meta": {
             "hostvars": {
                 "scw-cp-01": {
                     "ansible_host": cp_ip,
-                    "private_ip":   cp_private,
+                    "private_ip":   cp_ip,
                 },
                 "scw-worker-01": {
                     "ansible_host": w01_ip,

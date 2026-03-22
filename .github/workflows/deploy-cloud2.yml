@@ -13,10 +13,9 @@ jobs:
     name: Provisionner les instances Scaleway
     runs-on: ubuntu-latest
     outputs:
-      cp_ip:      ${{ steps.outputs.outputs.cp_ip }}
-      w01_ip:     ${{ steps.outputs.outputs.w01_ip }}
-      w02_ip:     ${{ steps.outputs.outputs.w02_ip }}
-      cp_private: ${{ steps.outputs.outputs.cp_private }}
+      cp_ip:  ${{ steps.outputs.outputs.cp_ip }}
+      w01_ip: ${{ steps.outputs.outputs.w01_ip }}
+      w02_ip: ${{ steps.outputs.outputs.w02_ip }}
 
     steps:
       - uses: actions/checkout@v4
@@ -56,10 +55,9 @@ jobs:
           SCW_ACCESS_KEY:        ${{ secrets.SCW_ACCESS_KEY }}
           SCW_SECRET_KEY:        ${{ secrets.SCW_SECRET_KEY }}
         run: |
-          echo "cp_ip=$(terraform output -raw control_plane_ip_public)"      >> "$GITHUB_OUTPUT"
-          echo "w01_ip=$(terraform output -raw worker01_ip_public)"          >> "$GITHUB_OUTPUT"
-          echo "w02_ip=$(terraform output -raw worker02_ip_public)"          >> "$GITHUB_OUTPUT"
-          echo "cp_private=$(terraform output -raw control_plane_ip_private)" >> "$GITHUB_OUTPUT"
+          echo "cp_ip=$(terraform output -raw control_plane_ip_public)"  >> "$GITHUB_OUTPUT"
+          echo "w01_ip=$(terraform output -raw worker01_ip_public)"      >> "$GITHUB_OUTPUT"
+          echo "w02_ip=$(terraform output -raw worker02_ip_public)"      >> "$GITHUB_OUTPUT"
 
   ansible:
     name: Bootstrap et init cluster
@@ -88,7 +86,6 @@ jobs:
           cat > ${{ env.ANSIBLE_DIR }}/tf_outputs.json <<'EOF'
           {
             "control_plane_ip_public":  { "value": "${{ needs.terraform.outputs.cp_ip }}" },
-            "control_plane_ip_private": { "value": "${{ needs.terraform.outputs.cp_private }}" },
             "worker01_ip_public":       { "value": "${{ needs.terraform.outputs.w01_ip }}" },
             "worker02_ip_public":       { "value": "${{ needs.terraform.outputs.w02_ip }}" }
           }
