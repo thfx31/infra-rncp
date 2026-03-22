@@ -19,6 +19,7 @@ Dans le dépôt GitHub : **Settings > Secrets and variables > Actions > New repo
 | `OVH_APPLICATION_SECRET` | Secret app OVH | [ovh-setup.md](ovh-setup.md) §2 |
 | `OVH_CONSUMER_KEY` | Consumer Key | [ovh-setup.md](ovh-setup.md) §2 |
 | `OVH_TENANT_ID` | Project ID OpenStack | [ovh-setup.md](ovh-setup.md) §3 |
+| `OS_USERNAME` | Nom d'utilisateur OpenStack (`user-XXXXXXXX`) | [ovh-setup.md](ovh-setup.md) §3 |
 | `OS_PASSWORD` | Mot de passe OpenStack | [ovh-setup.md](ovh-setup.md) §3 |
 | `SSH_PRIVATE_KEY` | Clé privée ED25519 (contenu complet) | [ovh-setup.md](ovh-setup.md) §4 |
 | `LETSENCRYPT_EMAIL` | Ton adresse email | - |

@@ -23,7 +23,7 @@ set -euo pipefail
 KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config-poc}"
 export KUBECONFIG
 
-GITLAB_URL="https://gitlab.k8s.thfx.fr"
+GITLAB_URL="https://gitlab.k8s.yplank.fr"
 GITLAB_GROUP="poc-ci"
 GITLAB_PROJECT="firmware-poc"
 GITLAB_DEFAULT_BRANCH="main"

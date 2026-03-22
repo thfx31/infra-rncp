@@ -58,8 +58,8 @@ kubectl get svc → EXTERNAL-IP = IP du LB OVH
 Un seul LB OVH est créé. Il route tout le trafic 80/443 vers le service
 `ingress-nginx`. Nginx Ingress route ensuite vers les bons services selon
 le `host` de la requête :
-- `gitlab.k8s.thfx.fr` → GitLab
-- `harbor.k8s.thfx.fr` → Harbor
+- `gitlab.k8s.yplank.fr` → GitLab
+- `harbor.k8s.yplank.fr` → Harbor
 - etc.
 
 ## Coût

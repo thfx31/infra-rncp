@@ -35,7 +35,7 @@ export TF_BACKEND_SECRET_KEY="..."
 | `flavor_worker` | `b3-16` | Flavor workers (8 vCPUs / 16 Go) |
 | `ssh_key_name` | `rncp-ovh` | Nom clé SSH dans OVH |
 | `cluster_name` | `rncp-ovh` | Préfixe des noms de ressources |
-| `domain` | `k8s.thfx.fr` | Domaine pour les services exposés |
+| `domain` | `k8s.yplank.fr` | Domaine pour les services exposés |
 | `vrack_subnet` | `10.0.0.0/24` | Plage réseau privé vRack |
 
 Pour les surcharger localement, créer un fichier `terraform/terraform.tfvars`

@@ -19,11 +19,11 @@ spec:
           ingress:
             enabled: true
             ingressClassName: nginx
-            hostName: jenkins.k8s.thfx.fr
+            hostName: jenkins.k8s.yplank.fr
             tls:
               - secretName: jenkins-tls
                 hosts:
-                  - jenkins.k8s.thfx.fr
+                  - jenkins.k8s.yplank.fr
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
           resources:

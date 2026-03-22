@@ -39,12 +39,12 @@ kubectl get secret jenkins -n jenkins \
 ```
 
 Services disponibles :
-- https://argocd.k8s.thfx.fr
-- https://gitlab.k8s.thfx.fr
-- https://harbor.k8s.thfx.fr
-- https://jenkins.k8s.thfx.fr
-- https://sonarqube.k8s.thfx.fr
-- https://grafana.k8s.thfx.fr
+- https://argocd.k8s.yplank.fr
+- https://gitlab.k8s.yplank.fr
+- https://harbor.k8s.yplank.fr
+- https://jenkins.k8s.yplank.fr
+- https://sonarqube.k8s.yplank.fr
+- https://grafana.k8s.yplank.fr
 
 ## Étape 3 — Déclencher le pipeline firmware
 
@@ -55,14 +55,14 @@ Services disponibles :
 
 ## Étape 4 — Vérifier les résultats CI/CD
 
-- **Jenkins** : https://jenkins.k8s.thfx.fr → pipeline en cours/terminé
-- **Harbor** : https://harbor.k8s.thfx.fr → image Docker publiée
-- **SonarQube** : https://sonarqube.k8s.thfx.fr → rapport qualité du code C
+- **Jenkins** : https://jenkins.k8s.yplank.fr → pipeline en cours/terminé
+- **Harbor** : https://harbor.k8s.yplank.fr → image Docker publiée
+- **SonarQube** : https://sonarqube.k8s.yplank.fr → rapport qualité du code C
 
 ## Étape 5 — Observer l'infrastructure
 
-- **Grafana** : https://grafana.k8s.thfx.fr → métriques Prometheus (CPU, mémoire, réseau)
-- **ArgoCD** : https://argocd.k8s.thfx.fr → état GitOps de toutes les applications
+- **Grafana** : https://grafana.k8s.yplank.fr → métriques Prometheus (CPU, mémoire, réseau)
+- **ArgoCD** : https://argocd.k8s.yplank.fr → état GitOps de toutes les applications
 
 ## Nettoyage post-démo
 

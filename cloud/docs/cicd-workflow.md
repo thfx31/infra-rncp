@@ -78,7 +78,7 @@ Compile le firmware C dans le conteneur de build approprié. Le node Jenkins tou
 docker run --rm \
     -v $(pwd):/workspace \
     -w /workspace \
-    harbor.k8s.thfx.fr/poc-ci/build-legacy-ubuntu18:latest \
+    harbor.k8s.yplank.fr/poc-ci/build-legacy-ubuntu18:latest \
     make TARGET=x86 clean all
 ```
 
@@ -90,7 +90,7 @@ Lance l'analyse statique du code C via le scanner SonarQube dans un conteneur Do
 
 ```bash
 docker run --rm \
-    -e SONAR_HOST_URL=https://sonarqube.k8s.thfx.fr \
+    -e SONAR_HOST_URL=https://sonarqube.k8s.yplank.fr \
     -e SONAR_TOKEN=${SONAR_TOKEN} \
     -v $(pwd):/usr/src \
     sonarsource/sonar-scanner-cli:latest \
