@@ -18,35 +18,7 @@
         state: started
         enabled: true
 
-# Play 2 : Récupérer le kubeconfig depuis le control plane
-- name: Récupérer le kubeconfig
-  hosts: control_plane
-  become: true
-  gather_facts: false
-
-  tasks:
-    - name: Lire le kubeconfig
-      ansible.builtin.slurp:
-        src: /etc/kubernetes/admin.conf
-      register: kubeconfig_b64
-
-    - name: Créer le répertoire .kube sur le runner
-      ansible.builtin.file:
-        path: "{{ lookup('env', 'HOME') }}/.kube"
-        state: directory
-        mode: '0700'
-      delegate_to: localhost
-      become: false
-
-    - name: Écrire le kubeconfig localement (~/.kube/config)
-      ansible.builtin.copy:
-        content: "{{ kubeconfig_b64.content | b64decode }}"
-        dest: "{{ lookup('env', 'HOME') }}/.kube/config"
-        mode: '0600'
-      delegate_to: localhost
-      become: false
-
-# Play 3 : Installation des composants K8s (via API)
+# Play 2 : Installation des composants K8s (via API)
 - name: Installer les composants fondation du cluster
   hosts: localhost
   connection: local

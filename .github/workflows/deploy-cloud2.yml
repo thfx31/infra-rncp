@@ -126,6 +126,14 @@ jobs:
             -i inventory.py init-cluster.yml \
             --timeout 30
 
+      - name: Récupérer le kubeconfig depuis le control plane
+        run: |
+          mkdir -p ~/.kube
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 \
+            almalinux@${{ needs.terraform.outputs.cp_ip }} \
+            "sudo cat /etc/kubernetes/admin.conf" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
       - name: Installer la fondation (Cilium, Scaleway CCM/CSI, cert-manager, ArgoCD)
         working-directory: ${{ env.ANSIBLE_DIR }}
         env:
