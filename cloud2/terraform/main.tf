@@ -33,7 +33,7 @@ resource "scaleway_instance_server" "nodes" {
 
   root_volume {
     size_in_gb  = each.key == "cp" ? 40 : 80
-    volume_type = "b_ssd"
+    volume_type = "sbs_volume"
   }
 
   # Réseau privé inter-nodes (pas de port_security sur Scaleway)
