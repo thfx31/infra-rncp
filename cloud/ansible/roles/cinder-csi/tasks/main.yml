@@ -1,0 +1,64 @@
+---
+- name: Ajouter le repo Helm cloud-provider-openstack
+  kubernetes.core.helm_repository:
+    name: cpo
+    repo_url: https://kubernetes.github.io/cloud-provider-openstack
+
+- name: Créer le namespace cinder-csi
+  kubernetes.core.k8s:
+    name: kube-system
+    api_version: v1
+    kind: Namespace
+    state: present
+
+- name: Créer le secret cloud-config pour Cinder CSI
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cloud-config
+        namespace: kube-system
+      stringData:
+        cloud.conf: |
+          [Global]
+          auth-url={{ lookup('env', 'OS_AUTH_URL') }}
+          username={{ lookup('env', 'OS_USERNAME') }}
+          password={{ lookup('env', 'OS_PASSWORD') }}
+          tenant-id={{ lookup('env', 'OS_TENANT_ID') }}
+          domain-name=Default
+          region={{ lookup('env', 'OS_REGION_NAME') | default('GRA9') }}
+
+- name: Installer cinder-csi-plugin
+  kubernetes.core.helm:
+    name: cinder-csi-plugin
+    chart_ref: cpo/openstack-cinder-csi
+    chart_version: "{{ cinder_csi_chart_version }}"
+    release_namespace: kube-system
+    values:
+      secret:
+        enabled: true
+        create: false
+        name: cloud-config
+      storageClass:
+        enabled: true
+        delete:
+          isDefault: true
+          allowVolumeExpansion: true
+          parameters:
+            type: "{{ cinder_storage_type }}"
+    wait: true
+    wait_timeout: "300s"
+
+- name: Vérifier que cinder-csi est prêt
+  kubernetes.core.k8s_info:
+    kind: DaemonSet
+    namespace: kube-system
+    name: cinder-csi-nodeplugin
+    wait: true
+    wait_timeout: 120
+    wait_condition:
+      type: Available
+      status: "True"
+  ignore_errors: true

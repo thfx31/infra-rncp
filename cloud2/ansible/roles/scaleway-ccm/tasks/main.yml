@@ -1,0 +1,43 @@
+---
+# Le Scaleway Cloud Controller Manager provisionne automatiquement
+# les Load Balancers Scaleway pour les services K8s de type LoadBalancer.
+
+- name: Créer le secret credentials Scaleway pour CCM
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: scaleway-secret
+        namespace: kube-system
+      type: Opaque
+      stringData:
+        SCW_ACCESS_KEY: "{{ lookup('env', 'SCW_ACCESS_KEY') }}"
+        SCW_SECRET_KEY: "{{ lookup('env', 'SCW_SECRET_KEY') }}"
+        SCW_DEFAULT_PROJECT_ID: "{{ lookup('env', 'SCW_DEFAULT_PROJECT_ID') }}"
+        SCW_DEFAULT_REGION: "{{ lookup('env', 'SCW_DEFAULT_REGION') }}"
+        SCW_DEFAULT_ZONE: "{{ lookup('env', 'SCW_DEFAULT_ZONE') }}"
+
+- name: Ajouter le repo Helm Scaleway
+  kubernetes.core.helm_repository:
+    name: scaleway
+    repo_url: https://scaleway.github.io/helm-charts
+
+- name: Installer scaleway-cloud-controller-manager
+  kubernetes.core.helm:
+    name: scaleway-cloud-controller-manager
+    chart_ref: scaleway/scaleway-cloud-controller-manager
+    chart_version: "{{ scaleway_ccm_chart_version }}"
+    release_namespace: kube-system
+    values:
+      scwSecret:
+        name: scaleway-secret
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+        - key: node.cloudprovider.kubernetes.io/uninitialized
+          value: "true"
+          effect: NoSchedule
+    wait: true
+    wait_timeout: "180s"

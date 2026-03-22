@@ -1,0 +1,11 @@
+---
+- name: Bootstrap des nodes Kubernetes
+  hosts: k8s_cluster
+  become: true
+
+  roles:
+    - common
+    - security
+    - kubernetes-prereqs
+    - containerd
+    - kubeadm

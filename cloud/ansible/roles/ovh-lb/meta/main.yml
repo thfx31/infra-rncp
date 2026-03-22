@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: ovh-lb
+  author: thomas
+  description: Déploiement du OVH Cloud Controller Manager pour Load Balancer managé
+  min_ansible_version: "2.9"
+dependencies: []

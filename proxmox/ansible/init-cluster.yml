@@ -1,0 +1,25 @@
+---
+- name: Initialiser le control plane
+  hosts: control_plane
+  become: true
+  roles:
+    - cluster-init
+
+- name: Joindre les workers au cluster
+  hosts: workers
+  become: true
+  roles:
+    - cluster-join
+
+- name: Vérifier l'état du cluster
+  hosts: control_plane
+  become: false
+  tasks:
+    - name: Lister les nodes
+      ansible.builtin.command: kubectl get nodes
+      register: kubectl_nodes
+      changed_when: false
+
+    - name: Afficher les nodes
+      ansible.builtin.debug:
+        msg: "{{ kubectl_nodes.stdout_lines }}"

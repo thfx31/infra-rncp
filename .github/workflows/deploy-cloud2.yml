@@ -1,22 +1,21 @@
-name: Deploy K8s cluster (OVH)
+name: Deploy K8s cluster (Scaleway)
 
 on:
   workflow_dispatch:
 
 env:
-  TF_DIR: cloud/terraform
-  ANSIBLE_DIR: cloud/ansible
-  VENV: /opt/venv/ansible
+  TF_DIR:       cloud2/terraform
+  ANSIBLE_DIR:  cloud2/ansible
+  VENV:         /opt/venv/ansible
 
 jobs:
   terraform:
-    name: Provisionner les instances OVH
+    name: Provisionner les instances Scaleway
     runs-on: ubuntu-latest
     outputs:
       cp_ip:      ${{ steps.outputs.outputs.cp_ip }}
       w01_ip:     ${{ steps.outputs.outputs.w01_ip }}
       w02_ip:     ${{ steps.outputs.outputs.w02_ip }}
-      lb_ip:      ${{ steps.outputs.outputs.lb_ip }}
       cp_private: ${{ steps.outputs.outputs.cp_private }}
 
     steps:
@@ -27,7 +26,7 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Terraform init (backend S3 OVH)
+      - name: Terraform init (backend S3 Scaleway)
         working-directory: ${{ env.TF_DIR }}
         env:
           AWS_ACCESS_KEY_ID:     ${{ secrets.TF_BACKEND_ACCESS_KEY }}
@@ -37,20 +36,15 @@ jobs:
       - name: Terraform apply
         working-directory: ${{ env.TF_DIR }}
         env:
-          AWS_ACCESS_KEY_ID:           ${{ secrets.TF_BACKEND_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY:       ${{ secrets.TF_BACKEND_SECRET_KEY }}
-          OVH_ENDPOINT:                ovh-eu
-          OVH_APPLICATION_KEY:         ${{ secrets.OVH_APPLICATION_KEY }}
-          OVH_APPLICATION_SECRET:      ${{ secrets.OVH_APPLICATION_SECRET }}
-          OVH_CONSUMER_KEY:            ${{ secrets.OVH_CONSUMER_KEY }}
-          OS_AUTH_URL:                 https://auth.cloud.ovh.net/v3
-          OS_TENANT_ID:                ${{ secrets.OVH_TENANT_ID }}
-          OS_USERNAME:                 ${{ secrets.OS_USERNAME }}
-          OS_PASSWORD:                 ${{ secrets.OS_PASSWORD }}
-          OS_USER_DOMAIN_NAME:         Default
-          OS_PROJECT_DOMAIN_NAME:      Default
-          TF_VAR_os_tenant_id:         ${{ secrets.OVH_TENANT_ID }}
-          TF_VAR_ssh_key_name:         rncp-ovh
+          AWS_ACCESS_KEY_ID:          ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY:      ${{ secrets.TF_BACKEND_SECRET_KEY }}
+          SCW_ACCESS_KEY:             ${{ secrets.SCW_ACCESS_KEY }}
+          SCW_SECRET_KEY:             ${{ secrets.SCW_SECRET_KEY }}
+          SCW_DEFAULT_PROJECT_ID:     ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          SCW_DEFAULT_REGION:         fr-par
+          SCW_DEFAULT_ZONE:           fr-par-2
+          TF_VAR_scw_region:          fr-par
+          TF_VAR_scw_zone:            fr-par-2
         run: terraform apply -auto-approve
 
       - name: Récupérer les outputs Terraform
@@ -59,12 +53,13 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID:     ${{ secrets.TF_BACKEND_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BACKEND_SECRET_KEY }}
+          SCW_ACCESS_KEY:        ${{ secrets.SCW_ACCESS_KEY }}
+          SCW_SECRET_KEY:        ${{ secrets.SCW_SECRET_KEY }}
         run: |
-          echo "cp_ip=$(terraform output -raw control_plane_ip_public 2>/dev/null)"   >> "$GITHUB_OUTPUT"
-          echo "w01_ip=$(terraform output -raw worker01_ip_public 2>/dev/null)"       >> "$GITHUB_OUTPUT"
-          echo "w02_ip=$(terraform output -raw worker02_ip_public 2>/dev/null)"       >> "$GITHUB_OUTPUT"
-          echo "lb_ip=$(terraform output -raw lb_ip 2>/dev/null)"                     >> "$GITHUB_OUTPUT"
-          echo "cp_private=$(terraform output -raw control_plane_ip_private 2>/dev/null)" >> "$GITHUB_OUTPUT"
+          echo "cp_ip=$(terraform output -raw control_plane_ip_public)"      >> "$GITHUB_OUTPUT"
+          echo "w01_ip=$(terraform output -raw worker01_ip_public)"          >> "$GITHUB_OUTPUT"
+          echo "w02_ip=$(terraform output -raw worker02_ip_public)"          >> "$GITHUB_OUTPUT"
+          echo "cp_private=$(terraform output -raw control_plane_ip_private)" >> "$GITHUB_OUTPUT"
 
   ansible:
     name: Bootstrap et init cluster
@@ -128,18 +123,18 @@ jobs:
             -i inventory.py init-cluster.yml \
             --timeout 30
 
-      - name: Installer la fondation (Cilium, ArgoCD, Cinder CSI, OVH LB)
+      - name: Installer la fondation (Cilium, Scaleway CCM/CSI, cert-manager, ArgoCD)
         working-directory: ${{ env.ANSIBLE_DIR }}
         env:
+          SCW_ACCESS_KEY:         ${{ secrets.SCW_ACCESS_KEY }}
+          SCW_SECRET_KEY:         ${{ secrets.SCW_SECRET_KEY }}
+          SCW_DEFAULT_PROJECT_ID: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          SCW_DEFAULT_REGION:     fr-par
+          SCW_DEFAULT_ZONE:       fr-par-2
           OVH_APPLICATION_KEY:    ${{ secrets.OVH_APPLICATION_KEY }}
           OVH_APPLICATION_SECRET: ${{ secrets.OVH_APPLICATION_SECRET }}
           OVH_CONSUMER_KEY:       ${{ secrets.OVH_CONSUMER_KEY }}
           LETSENCRYPT_EMAIL:      ${{ secrets.LETSENCRYPT_EMAIL }}
-          OS_AUTH_URL:            https://auth.cloud.ovh.net/v3
-          OS_TENANT_ID:           ${{ secrets.OVH_TENANT_ID }}
-          OS_USERNAME:            ${{ secrets.OS_USERNAME }}
-          OS_PASSWORD:            ${{ secrets.OS_PASSWORD }}
-          OS_REGION_NAME:         GRA9
         run: |
           ${{ env.VENV }}/bin/ansible-playbook \
             -i inventory.py install-foundation.yml \
@@ -147,34 +142,4 @@ jobs:
             -e ovh_application_key="${OVH_APPLICATION_KEY}" \
             -e ovh_application_secret="${OVH_APPLICATION_SECRET}" \
             -e ovh_consumer_key="${OVH_CONSUMER_KEY}" \
-            -e letsencrypt_email="${LETSENCRYPT_EMAIL}" \
-            -e os_tenant_id="${OS_TENANT_ID}" \
-            -e os_application_credential_id="${OS_APPLICATION_CREDENTIAL_ID}" \
-            -e os_application_credential_secret="${OS_APPLICATION_CREDENTIAL_SECRET}"
-
-  # gitlab-init:
-  #   name: Initialiser GitLab
-  #   runs-on: ubuntu-latest
-  #   needs: [terraform, ansible]
-
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     - name: Configurer la clé SSH
-  #       run: |
-  #         mkdir -p ~/.ssh
-  #         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-  #         chmod 600 ~/.ssh/id_ed25519
-
-  #     - name: Attendre que GitLab soit disponible
-  #       run: |
-  #         echo "Attente démarrage GitLab (jusqu'à 10 min)..."
-  #         timeout 600 bash -c \
-  #           "until curl -sk https://gitlab.k8s.thfx.fr/-/readiness | grep -q '\"status\":\"ok\"'; \
-  #            do sleep 15; done"
-
-  #     - name: Initialiser GitLab (projet firmware-poc)
-  #       run: |
-  #         ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 \
-  #           admintf@${{ needs.terraform.outputs.cp_ip }} \
-  #           "bash -s" < cloud/gitlab-init.sh
+            -e letsencrypt_email="${LETSENCRYPT_EMAIL}"
