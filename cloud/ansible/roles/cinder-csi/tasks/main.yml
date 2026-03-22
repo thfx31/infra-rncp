@@ -49,7 +49,7 @@
           parameters:
             type: "{{ cinder_storage_type }}"
     wait: true
-    wait_timeout: "180s"
+    wait_timeout: "300s"
 
 - name: Vérifier que cinder-csi est prêt
   kubernetes.core.k8s_info:
