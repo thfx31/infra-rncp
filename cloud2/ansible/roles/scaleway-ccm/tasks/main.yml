@@ -1,6 +1,7 @@
 ---
 # Le Scaleway Cloud Controller Manager provisionne automatiquement
 # les Load Balancers Scaleway pour les services K8s de type LoadBalancer.
+# Déployé via manifests officiels (pas de chart Helm disponible).
 
 - name: Créer le secret credentials Scaleway pour CCM
   kubernetes.core.k8s:
@@ -16,28 +17,23 @@
         SCW_ACCESS_KEY: "{{ lookup('env', 'SCW_ACCESS_KEY') }}"
         SCW_SECRET_KEY: "{{ lookup('env', 'SCW_SECRET_KEY') }}"
         SCW_DEFAULT_PROJECT_ID: "{{ lookup('env', 'SCW_DEFAULT_PROJECT_ID') }}"
-        SCW_DEFAULT_REGION: "{{ lookup('env', 'SCW_DEFAULT_REGION') }}"
-        SCW_DEFAULT_ZONE: "{{ lookup('env', 'SCW_DEFAULT_ZONE') }}"
+        SCW_DEFAULT_REGION: "{{ lookup('env', 'SCW_DEFAULT_REGION') | default('fr-par') }}"
+        SCW_DEFAULT_ZONE: "{{ lookup('env', 'SCW_DEFAULT_ZONE') | default('fr-par-2') }}"
 
-- name: Ajouter le repo Helm Scaleway
-  kubernetes.core.helm_repository:
-    name: scaleway
-    repo_url: https://scaleway.github.io/helm-charts
+- name: Déployer le Scaleway CCM via manifest officiel
+  kubernetes.core.k8s:
+    state: present
+    src: "https://raw.githubusercontent.com/scaleway/scaleway-cloud-controller-manager/master/releases/scaleway-cloud-controller-manager.yaml"
 
-- name: Installer scaleway-cloud-controller-manager
-  kubernetes.core.helm:
+- name: Attendre que le CCM soit prêt
+  kubernetes.core.k8s_info:
+    api_version: apps/v1
+    kind: Deployment
     name: scaleway-cloud-controller-manager
-    chart_ref: scaleway/scaleway-cloud-controller-manager
-    chart_version: "{{ scaleway_ccm_chart_version }}"
-    release_namespace: kube-system
-    values:
-      scwSecret:
-        name: scaleway-secret
-      tolerations:
-        - key: node-role.kubernetes.io/control-plane
-          effect: NoSchedule
-        - key: node.cloudprovider.kubernetes.io/uninitialized
-          value: "true"
-          effect: NoSchedule
-    wait: true
-    wait_timeout: "180s"
+    namespace: kube-system
+  register: ccm_deployment
+  until: >
+    ccm_deployment.resources | length > 0 and
+    (ccm_deployment.resources[0].status.readyReplicas | default(0)) >= 1
+  retries: 30
+  delay: 10

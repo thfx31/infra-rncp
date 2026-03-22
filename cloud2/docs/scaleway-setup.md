@@ -11,10 +11,10 @@ dans toutes les instances du projet (pas besoin de la référencer dans Terrafor
 
 ```bash
 # Générer une clé si nécessaire
-ssh-keygen -t ed25519 -C "rncp-scaleway" -f ~/.ssh/id_ed25519
+ssh-keygen -t ed25519 -C "rncp-scaleway" -f ~/.ssh/id_ed25519-scw
 
 # Copier la clé publique
-cat ~/.ssh/id_ed25519.pub
+cat ~/.ssh/id_ed25519-csw.pub
 ```
 
 **Console Scaleway → Project Settings → SSH Keys → Add SSH Key**
@@ -35,37 +35,17 @@ Nécessaires pour Terraform et les rôles Ansible Scaleway (CCM, CSI).
 
 À créer une seule fois manuellement avant le premier `terraform init`.
 
-**Option A — Console :**
+**Console :**
 Console Scaleway → Object Storage → Create Bucket
 - Nom : `terraform-state-rncp`
 - Région : `fr-par`
 - Visibilité : **Private**
 
-**Option B — CLI :**
-```bash
-# Installer le CLI Scaleway
-curl -s https://raw.githubusercontent.com/scaleway/scaleway-cli/master/scripts/get.sh | sh
-
-# Configurer
-scw init
-
-# Créer le bucket
-scw object bucket create name=terraform-state-rncp region=fr-par
-```
-
 Les credentials S3 sont les **mêmes que les API Keys IAM** (section 3) — pas besoin
 d'en générer de nouveaux. Utiliser le même Access Key / Secret Key pour
 `TF_BACKEND_ACCESS_KEY` / `TF_BACKEND_SECRET_KEY`.
 
-## 5. Vérifier l'image AlmaLinux disponible
-
-```bash
-scw marketplace image list | grep -i alma
-```
-
-Mettre à jour `var.image` dans `terraform/variables.tf` si le nom diffère de `almalinux_9`.
-
-## 6. Récapitulatif des valeurs à sauvegarder
+## 5. Récapitulatif des valeurs à sauvegarder
 
 | Variable GitHub Secret | Description | Obtenu depuis |
 |------------------------|-------------|---------------|
@@ -80,7 +60,7 @@ Mettre à jour `var.image` dans `terraform/variables.tf` si le nom diffère de `
 | `OVH_APPLICATION_SECRET` | API OVH | idem |
 | `OVH_CONSUMER_KEY` | API OVH | idem |
 
-> Les credentials OVH (`OVH_*`) sont toujours nécessaires uniquement pour le
+> Les credentials OVH (`OVH_*`) sont nécessaires uniquement pour le
 > challenge DNS cert-manager (le domaine `yplank.fr` reste géré par OVH DNS).
 
 → Voir [github-actions.md](github-actions.md) pour configurer ces secrets.

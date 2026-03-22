@@ -28,7 +28,7 @@ Alternative à `cloud/` (OVH) — même stack K8s, provider cloud différent.
 
 6. **[ansible.md](ansible.md)** — Inventaire dynamique, playbooks, rôles.
 
-### GitOps et CI/CD (identiques à cloud/)
+### GitOps et CI/CD
 
 7. **[argocd_gitops.md](argocd_gitops.md)** — Pattern App-of-Apps, déploiement
    des applications via ArgoCD.
