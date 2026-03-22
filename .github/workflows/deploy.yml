@@ -99,7 +99,7 @@ jobs:
           }
           EOF
 
-      - name: Attendre que SSH soit disponible
+      - name: Attendre que SSH et cloud-init soient prêts
         run: |
           for ip in ${{ needs.terraform.outputs.cp_ip }} \
                     ${{ needs.terraform.outputs.w01_ip }} \
@@ -110,19 +110,25 @@ jobs:
               echo 'Echec SSH, retry dans 10s...'
               sleep 10
             done"
+            echo "Attente cloud-init $ip..."
+            timeout 300 ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 \
+              -i ~/.ssh/id_ed25519 almalinux@$ip \
+              'sudo cloud-init status --wait || true'
           done
 
       - name: Bootstrap OS (containerd, kubeadm)
         working-directory: ${{ env.ANSIBLE_DIR }}
         run: |
           ${{ env.VENV }}/bin/ansible-playbook \
-            -i inventory.py bootstrap-k8s.yml
+            -i inventory.py bootstrap-k8s.yml \
+            --timeout 30
 
       - name: Initialiser le cluster Kubernetes
         working-directory: ${{ env.ANSIBLE_DIR }}
         run: |
           ${{ env.VENV }}/bin/ansible-playbook \
-            -i inventory.py init-cluster.yml
+            -i inventory.py init-cluster.yml \
+            --timeout 30
 
       - name: Installer la fondation (Cilium, ArgoCD, Cinder CSI, OVH LB)
         working-directory: ${{ env.ANSIBLE_DIR }}
@@ -139,6 +145,7 @@ jobs:
         run: |
           ${{ env.VENV }}/bin/ansible-playbook \
             -i inventory.py install-foundation.yml \
+            --timeout 30 \
             -e ovh_application_key="${OVH_APPLICATION_KEY}" \
             -e ovh_application_secret="${OVH_APPLICATION_SECRET}" \
             -e ovh_consumer_key="${OVH_CONSUMER_KEY}" \
