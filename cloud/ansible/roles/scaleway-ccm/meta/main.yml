@@ -1,6 +1,6 @@
 ---
 author: Thomas Fauroux
-description: Installation et configuration du runtime containerd
+description: Installation du Cloud Controller Manager Scaleway (gestion LB Kubernetes et ExternalIP)
 license: MIT
 min_ansible_version: "2.15"
 platforms:

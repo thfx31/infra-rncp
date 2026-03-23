@@ -1,6 +1,6 @@
 ---
 author: Thomas Fauroux
-description: Installation et configuration du runtime containerd
+description: Installation du driver CSI Scaleway Block Storage (provisionnement dynamique de volumes)
 license: MIT
 min_ansible_version: "2.15"
 platforms:
