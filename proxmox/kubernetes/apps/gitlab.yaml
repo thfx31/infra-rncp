@@ -15,11 +15,11 @@ spec:
       valuesObject:
         global:
           hosts:
-            domain: k8s.thfx.fr
+            domain: k8s.homelab.example
             gitlab:
-              name: gitlab.k8s.thfx.fr
+              name: gitlab.k8s.homelab.example
             minio:
-              name: minio.k8s.thfx.fr
+              name: minio.k8s.homelab.example
           ingress:
             class: nginx
             annotations:

@@ -22,11 +22,11 @@ spec:
               secretName: harbor-tls
           ingress:
             hosts:
-              core: harbor.k8s.thfx.fr
+              core: harbor.k8s.homelab.example
             className: nginx
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
-        externalURL: https://harbor.k8s.thfx.fr
+        externalURL: https://harbor.k8s.homelab.example
         harborAdminPassword: "Ch4ng3M3!"
         # Stratégie Recreate pour les composants avec PVC RWO
         registry:

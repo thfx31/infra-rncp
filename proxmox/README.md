@@ -16,9 +16,9 @@ Proxmox Homelab
 
 | Nœud | IP | Rôle | CPU / RAM / Disque |
 |------|----|------|--------------------|
-| rncp-cp-01 | 192.168.1.120 | Control Plane | 4c / 8 GB / 80 GB |
-| rncp-worker-01 | 192.168.1.121 | GitLab, Harbor | 4c / 10 GB / 150 GB |
-| rncp-worker-02 | 192.168.1.122 | Jenkins, SonarQube, Monitoring | 4c / 10 GB / 150 GB |
+| rncp-cp-01 | 192.168.x.120 | Control Plane | 4c / 8 GB / 80 GB |
+| rncp-worker-01 | 192.168.x.121 | GitLab, Harbor | 4c / 10 GB / 150 GB |
+| rncp-worker-02 | 192.168.x.122 | Jenkins, SonarQube, Monitoring | 4c / 10 GB / 150 GB |
 
 ## Démarrage rapide
 

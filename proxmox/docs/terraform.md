@@ -64,24 +64,24 @@ terraform destroy
 
 | Nom | VMID | IP | vCPU | RAM | Disque | Rôle |
 |-----|------|----|------|-----|--------|------|
-| rncp-cp-01 | 120 | 192.168.1.120 | 2 | 4 Go | 50 Go | K8s Control Plane |
-| rncp-worker-01 | 121 | 192.168.1.121 | 2 | 8 Go | 80 Go | K8s Worker |
-| rncp-worker-02 | 122 | 192.168.1.122 | 2 | 8 Go | 80 Go | K8s Worker |
+| rncp-cp-01 | 120 | 192.168.x.120 | 2 | 4 Go | 50 Go | K8s Control Plane |
+| rncp-worker-01 | 121 | 192.168.x.121 | 2 | 8 Go | 80 Go | K8s Worker |
+| rncp-worker-02 | 122 | 192.168.x.122 | 2 | 8 Go | 80 Go | K8s Worker |
 
 ### Machine d'administration (hors Terraform)
 
 | Nom | IP | vCPU | RAM | Disque | Rôle |
 |-----|-----|------|-----|--------|------|
-| rncp-bastion | 192.168.1.130 | 2 | 2 Go | 30 Go | Terraform, Ansible, kubectl, Helm |
+| rncp-bastion | 192.168.x.130 | 2 | 2 Go | 30 Go | Terraform, Ansible, kubectl, Helm |
 
 
 ## Connexion SSH
 
 ```bash
-ssh admintf@192.168.1.120  # rncp-cp-01
-ssh admintf@192.168.1.121  # rncp-worker-01
-ssh admintf@192.168.1.122  # rncp-worker-02
-ssh admintf@192.168.1.130  # rncp-bastion
+ssh admintf@192.168.x.120  # rncp-cp-01
+ssh admintf@192.168.x.121  # rncp-worker-01
+ssh admintf@192.168.x.122  # rncp-worker-02
+ssh admintf@192.168.x.130  # rncp-bastion
 ```
 
 ## Structure des fichiers

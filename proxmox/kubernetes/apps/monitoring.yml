@@ -22,7 +22,7 @@ spec:
           # Grafana doit connaître son URL publique pour générer les bons chemins d'assets
           grafana.ini:
             server:
-              root_url: https://grafana.k8s.thfx.fr
+              root_url: https://grafana.k8s.homelab.example
           ingress:
             enabled: true
             ingressClassName: nginx
@@ -32,11 +32,11 @@ spec:
               nginx.ingress.kubernetes.io/proxy-buffers-number: "8"
               nginx.ingress.kubernetes.io/proxy-body-size: "50m"
             hosts:
-              - grafana.k8s.thfx.fr
+              - grafana.k8s.homelab.example
             tls:
               - secretName: grafana-tls
                 hosts:
-                  - grafana.k8s.thfx.fr
+                  - grafana.k8s.homelab.example
           resources:
             requests:
               cpu: 100m

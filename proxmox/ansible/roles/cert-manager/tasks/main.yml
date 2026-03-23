@@ -60,7 +60,7 @@
     chart_ref: cert-manager-webhook-ovh-charts/cert-manager-webhook-ovh
     release_namespace: "{{ certmanager_namespace }}"
     values:
-      groupName: acme.thfx.fr
+      groupName: acme.homelab.example
       certManager:
         namespace: "{{ certmanager_namespace }}"
         serviceAccountName: cert-manager

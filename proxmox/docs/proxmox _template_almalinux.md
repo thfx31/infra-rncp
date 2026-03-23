@@ -74,7 +74,7 @@ Crée un fichier sur la machine d'admin (futur bastion) :
 ```bash
 # Fichier d'environnement pour Terraform (NE PAS commit sur Git !)
 cat > ~/.proxmox-terraform.env << 'EOF'
-export PROXMOX_VE_ENDPOINT="https://192.168.1.x:8006/"
+export PROXMOX_VE_ENDPOINT="https://192.168.x.x:8006/"
 export PROXMOX_VE_API_TOKEN="terraform@pam!terraform-token=TON_SECRET_ICI"
 EOF
 

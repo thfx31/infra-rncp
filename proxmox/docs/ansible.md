@@ -140,7 +140,7 @@ Le playbook comporte deux plays :
 | Rôle | Description |
 |------|-------------|
 | `cilium` | CNI Cilium v1.16.5 via Helm dans `kube-system`, avec Hubble (observabilité réseau) activé |
-| `metallb` | Load Balancer bare-metal MetalLB v0.14.9 via Helm dans `metallb-system`, pool d'IP `192.168.1.140-150`, annonce L2 |
+| `metallb` | Load Balancer bare-metal MetalLB v0.14.9 via Helm dans `metallb-system`, pool d'IP `192.168.x.140-150`, annonce L2 |
 | `longhorn` | Stockage distribué Longhorn v1.7.2 via Helm dans `longhorn-system`, 2 réplicas par volume |
 | `cert-manager` | Gestion de certificats TLS cert-manager v1.17.1 via Helm dans `cert-manager`, webhook OVH pour challenge DNS-01, ClusterIssuer Let's Encrypt production |
 | `ingress-nginx` | Ingress Controller NGINX v4.12.1 via Helm dans `ingress-nginx`, service LoadBalancer (IP attribuée par MetalLB) |
@@ -148,19 +148,19 @@ Le playbook comporte deux plays :
 
 ### Réseau et accès aux services
 
-L'Ingress Controller NGINX reçoit une IP externe via MetalLB (première IP du pool : `192.168.1.140`). Les services applicatifs déployés par ArgoCD seront exposés via des Ingress avec certificats TLS Let's Encrypt automatiques.
+L'Ingress Controller NGINX reçoit une IP externe via MetalLB (première IP du pool : `192.168.x.140`). Les services applicatifs déployés par ArgoCD seront exposés via des Ingress avec certificats TLS Let's Encrypt automatiques.
 
 | Service | FQDN | Méthode d'accès |
 |---------|------|-----------------|
-| ArgoCD | `argocd.k8s.thfx.fr` | Ingress (à migrer depuis NodePort) |
-| Harbor | `harbor.k8s.thfx.fr` | Ingress |
-| GitLab | `gitlab.k8s.thfx.fr` | Ingress |
-| Jenkins | `jenkins.k8s.thfx.fr` | Ingress |
-| SonarQube | `sonar.k8s.thfx.fr` | Ingress |
+| ArgoCD | `argocd.k8s.homelab.example` | Ingress (à migrer depuis NodePort) |
+| Harbor | `harbor.k8s.homelab.example` | Ingress |
+| GitLab | `gitlab.k8s.homelab.example` | Ingress |
+| Jenkins | `jenkins.k8s.homelab.example` | Ingress |
+| SonarQube | `sonar.k8s.homelab.example` | Ingress |
 
 **Résolution DNS** :
-- **Réseau local** : réécriture AdGuard `*.k8s.thfx.fr → 192.168.1.140`
-- **Accès externe** (démo/jury) : enregistrement DNS OVH `*.k8s.thfx.fr → IP publique` + port-forward box 80/443 → 192.168.1.140
+- **Réseau local** : réécriture AdGuard `*.k8s.homelab.example → 192.168.x.140`
+- **Accès externe** (démo/jury) : enregistrement DNS OVH `*.k8s.homelab.example → IP publique` + port-forward box 80/443 → 192.168.x.140
 
 ### Accès ArgoCD
 

@@ -54,12 +54,12 @@ Chaque Application enfant pointe vers un **Helm chart distant** avec des valeurs
 
 | Service | URL | Chart Helm | Namespace |
 |---------|-----|------------|-----------|
-| ArgoCD | https://argocd.k8s.thfx.fr | Déployé manuellement (Helm) | `argocd` |
-| Harbor | https://harbor.k8s.thfx.fr | `helm.goharbor.io/harbor` | `harbor` |
-| GitLab | https://gitlab.k8s.thfx.fr | `charts.gitlab.io/gitlab` | `gitlab` |
-| Jenkins | https://jenkins.k8s.thfx.fr | `charts.jenkins.io/jenkins` | `jenkins` |
-| SonarQube | https://sonarqube.k8s.thfx.fr | `sonarsource.github.io/.../sonarqube` | `sonarqube` |
-| Grafana | https://grafana.k8s.thfx.fr | `prometheus-community/.../kube-prometheus-stack` | `monitoring` |
+| ArgoCD | https://argocd.k8s.homelab.example | Déployé manuellement (Helm) | `argocd` |
+| Harbor | https://harbor.k8s.homelab.example | `helm.goharbor.io/harbor` | `harbor` |
+| GitLab | https://gitlab.k8s.homelab.example | `charts.gitlab.io/gitlab` | `gitlab` |
+| Jenkins | https://jenkins.k8s.homelab.example | `charts.jenkins.io/jenkins` | `jenkins` |
+| SonarQube | https://sonarqube.k8s.homelab.example | `sonarsource.github.io/.../sonarqube` | `sonarqube` |
+| Grafana | https://grafana.k8s.homelab.example | `prometheus-community/.../kube-prometheus-stack` | `monitoring` |
 | Metrics Server | — (API interne) | `kubernetes-sigs/.../metrics-server` | `kube-system` |
 
 ## Flux de travail quotidien
@@ -78,7 +78,7 @@ Chaque Application enfant pointe vers un **Helm chart distant** avec des valeurs
 
 ### Forcer un refresh immédiat
 
-Via l'UI : ouvrir https://argocd.k8s.thfx.fr → cliquer **Refresh** sur l'application.
+Via l'UI : ouvrir https://argocd.k8s.homelab.example → cliquer **Refresh** sur l'application.
 
 Via CLI :
 ```bash
@@ -106,4 +106,4 @@ Chaque service doit avoir un `secretName` TLS unique pour éviter les conflits d
 
 ## DNS
 
-Tous les sous-domaines `*.k8s.thfx.fr` pointent vers `192.168.1.140` (IP MetalLB de l'Ingress NGINX), configuré dans AdGuard Home (homelab)
+Tous les sous-domaines `*.k8s.homelab.example` pointent vers `192.168.x.140` (IP MetalLB de l'Ingress NGINX), configuré dans AdGuard Home (homelab)

@@ -43,7 +43,7 @@ Défini dans le `values.yaml` du chart Harbor lors du déploiement ArgoCD. Par d
 
 ### 2.1 Création du projet firmware-poc
 
-1. Connecte-toi sur `https://sonarqube.k8s.thfx.fr` (admin / admin par défaut, à changer)
+1. Connecte-toi sur `https://sonarqube.k8s.homelab.example` (admin / admin par défaut, à changer)
 2. **Projects → Create project → Manually**
 3. **Project key** : `firmware-poc`
 4. **Display name** : `Firmware POC`
@@ -117,7 +117,7 @@ Tous les credentials Jenkins se configurent dans **Manage Jenkins → Credential
 | Champ | Valeur |
 |-------|--------|
 | Name | `sonarqube` (**sensible à la casse**, doit correspondre exactement au nom dans le Jenkinsfile) |
-| Server URL | `https://sonarqube.k8s.thfx.fr` |
+| Server URL | `https://sonarqube.k8s.homelab.example` |
 | Server authentication token | Sélectionner le credential `sonarqube` |
 
 5. **Save**
@@ -126,7 +126,7 @@ Tous les credentials Jenkins se configurent dans **Manage Jenkins → Credential
 
 ## 5. Création du projet Harbor
 
-1. Connecte-toi sur `https://harbor.k8s.thfx.fr` (admin / Ch4ng3M3!)
+1. Connecte-toi sur `https://harbor.k8s.homelab.example` (admin / Ch4ng3M3!)
 2. **Projects → New Project**
 
 | Champ | Valeur |
@@ -173,7 +173,7 @@ Le script effectue les opérations suivantes :
 |-------|--------|
 | Definition | Pipeline script from SCM |
 | SCM | Git |
-| Repository URL | `https://gitlab.k8s.thfx.fr/poc-ci/firmware-poc.git` |
+| Repository URL | `https://gitlab.k8s.homelab.example/poc-ci/firmware-poc.git` |
 | Credentials | `gitlab-credentials` |
 | Branch Specifier | `*/main` |
 | Script Path | `Jenkinsfile` |

@@ -29,13 +29,13 @@ variable "storage" {
 variable "gateway" {
   description = "Passerelle réseau"
   type        = string
-  default     = "192.168.1.254"
+  default     = "192.168.x.254"
 }
 
 variable "dns_server" {
   description = "Serveur DNS"
   type        = string
-  default     = "192.168.1.250"
+  default     = "192.168.x.250"
 }
 
 variable "bridge" {
@@ -78,21 +78,21 @@ variable "vms" {
       cores   = 4
       memory  = 8192
       disk_gb = 80
-      ip      = "192.168.1.120"
+      ip      = "192.168.x.120"
     }
     rncp-worker-01 = {
       vmid    = 121
       cores   = 4
       memory  = 10240
       disk_gb = 150
-      ip      = "192.168.1.121"
+      ip      = "192.168.x.121"
     }
     rncp-worker-02 = {
       vmid    = 122
       cores   = 4
       memory  = 10240
       disk_gb = 150
-      ip      = "192.168.1.122"
+      ip      = "192.168.x.122"
     }
   }
 }

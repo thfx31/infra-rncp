@@ -14,17 +14,17 @@ kubectl get nodes
 kubectl get pods -A | grep -v Running | grep -v Completed
 
 # Services accessibles
-curl -sk https://gitlab.k8s.thfx.fr/-/readiness | python3 -m json.tool
-curl -sk https://harbor.k8s.thfx.fr/api/v2.0/health | python3 -m json.tool
-curl -sk https://jenkins.k8s.thfx.fr/login | grep -c "Jenkins"
-curl -sk https://sonarqube.k8s.thfx.fr/api/system/status | python3 -m json.tool
+curl -sk https://gitlab.k8s.homelab.example/-/readiness | python3 -m json.tool
+curl -sk https://harbor.k8s.homelab.example/api/v2.0/health | python3 -m json.tool
+curl -sk https://jenkins.k8s.homelab.example/login | grep -c "Jenkins"
+curl -sk https://sonarqube.k8s.homelab.example/api/system/status | python3 -m json.tool
 ```
 
 ### Vérification pipelines
 
 1. Lancer un build `firmware-poc` → vérifier qu'il passe en vert
 2. Lancer un build `firmware-poc-modern` → vérifier qu'il passe en vert
-3. Vérifier la présence des images dans Harbor : `https://harbor.k8s.thfx.fr`
+3. Vérifier la présence des images dans Harbor : `https://harbor.k8s.homelab.example`
 
 ### Vérification ressources
 
@@ -48,19 +48,19 @@ Montrer le schéma d'architecture et expliquer :
 - La séparation GitHub (infra) / GitLab (app)
 
 **URL à ouvrir** :
-- `https://argocd.k8s.thfx.fr` — montrer les applications déployées
-- `https://grafana.k8s.thfx.fr` — montrer le monitoring du cluster
+- `https://argocd.k8s.homelab.example` — montrer les applications déployées
+- `https://grafana.k8s.homelab.example` — montrer le monitoring du cluster
 
 ### Étape 2 — Présentation du code source (3 min)
 
-Ouvrir `https://gitlab.k8s.thfx.fr/poc-ci/firmware-poc` et montrer :
+Ouvrir `https://gitlab.k8s.homelab.example/poc-ci/firmware-poc` et montrer :
 - La structure du projet (src/, include/, Makefile)
 - Le Jenkinsfile et ses 7 stages
 - Expliquer que ce code représente un firmware embarqué réel (télémétrie, HAL, CRC)
 
 ### Étape 3 — Lancement du pipeline legacy (10 min)
 
-1. Aller sur `https://jenkins.k8s.thfx.fr`
+1. Aller sur `https://jenkins.k8s.homelab.example`
 2. Ouvrir le job `firmware-poc`
 3. Cliquer **Build Now**
 4. Montrer le pod qui se crée : `kubectl get pods -n jenkins -w`
@@ -82,12 +82,12 @@ Ouvrir `https://gitlab.k8s.thfx.fr/poc-ci/firmware-poc` et montrer :
 
 ### Étape 5 — Résultats Harbor et SonarQube (3 min)
 
-**Harbor** (`https://harbor.k8s.thfx.fr`) :
+**Harbor** (`https://harbor.k8s.homelab.example`) :
 - Projet `poc-ci`
 - Images taguées avec le hash de commit
 - Historique des builds
 
-**SonarQube** (`https://sonarqube.k8s.thfx.fr`) :
+**SonarQube** (`https://sonarqube.k8s.homelab.example`) :
 - Projet `firmware-poc` → metrics du code C
 - Quality Gate passée
 - Absence de bugs/code smells critiques

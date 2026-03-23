@@ -20,12 +20,12 @@ spec:
           enabled: true
           ingressClassName: nginx
           hosts:
-            - name: sonarqube.k8s.thfx.fr
+            - name: sonarqube.k8s.homelab.example
               path: /
           tls:
             - secretName: sonarqube-tls
               hosts:
-                - sonarqube.k8s.thfx.fr
+                - sonarqube.k8s.homelab.example
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-prod
         resources:
