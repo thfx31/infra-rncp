@@ -90,7 +90,7 @@ Lance l'analyse statique du code C via le scanner SonarQube dans un conteneur Do
 
 ```bash
 docker run --rm \
-    -e SONAR_HOST_URL=https://sonarqube.k8s.homelab.example \
+    -e SONAR_HOST_URL=${SONAR_HOST_URL} \
     -e SONAR_TOKEN=${SONAR_TOKEN} \
     -v $(pwd):/usr/src \
     sonarsource/sonar-scanner-cli:latest \
@@ -145,4 +145,4 @@ Les deux jobs partagent le même code source firmware et la même logique de pip
 | GitHub (`infra-rncp`) | Terraform, Ansible, manifestes K8s, Dockerfiles, Jenkinsfile | Code d'infrastructure, géré par l'équipe infra |
 | GitLab (cluster K8s) | Code C firmware, Makefile, Jenkinsfile | Code applicatif, poussé par les développeurs |
 
-Le script `gitlab-init.sh` synchronise le contenu de `docker/firmware-poc/` depuis GitHub vers GitLab. En production, les développeurs pousseraient directement sur GitLab.
+Le script `gitlab-init.sh` (à la racine du dépôt) synchronise le contenu de `docker/firmware-poc/` depuis GitHub vers GitLab. En production, les développeurs pousseraient directement sur GitLab.

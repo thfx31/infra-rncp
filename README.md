@@ -69,11 +69,12 @@ Deux pipelines parallèles :
 
 ```
 infra-rncp/
+├── docker/firmware-poc/    Images de build firmware + code source C (partagé)
+├── gitlab-init.sh          Initialisation GitLab post-déploiement (partagé)
 ├── proxmox/                Déploiement on-premise (Proxmox)
 │   ├── terraform/          Provisionnement VMs
 │   ├── ansible/            Bootstrap et fondation K8s
 │   ├── kubernetes/apps/    Applications ArgoCD
-│   ├── docker/             Images de build firmware + code source C
 │   ├── docs/               Documentation technique
 │   └── Makefile            Commandes de pilotage
 ├── cloud/                  Déploiement cloud (Scaleway)

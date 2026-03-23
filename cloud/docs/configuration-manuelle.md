@@ -152,21 +152,21 @@ Tous les credentials Jenkins se configurent dans **Manage Jenkins → Credential
 
 ## 6. Initialisation du projet GitLab
 
-Le script `gitlab-init.sh` automatise la création du groupe, du projet et le push du code source depuis GitHub.
+Le script `gitlab-init.sh` (racine du dépôt) automatise la création du groupe, du projet et le push du code source depuis GitHub.
 
 ```bash
-./gitlab-init.sh
+# Depuis le dossier cloud/
+GITLAB_URL=https://gitlab.k8s.yplank.fr ../gitlab-init.sh
 ```
 
 Le script effectue les opérations suivantes :
 1. Attend que GitLab soit opérationnel (timeout 600s)
-2. Récupère le mot de passe root depuis le secret Kubernetes
-3. Obtient un token API via OAuth (Resource Owner Password Grant)
-4. Crée le groupe `poc-ci` (idempotent)
-5. Crée le projet `firmware-poc` (idempotent)
-6. Désactive temporairement la protection de la branche `main`
-7. Clone `infra-rncp` depuis GitHub et pousse `docker/firmware-poc/` sur GitLab
-8. Réactive la protection de branche
+2. Obtient un token API via OAuth (Resource Owner Password Grant)
+3. Crée le groupe `poc-ci` (idempotent)
+4. Crée le projet `firmware-poc` (idempotent)
+5. Désactive temporairement la protection de la branche `main`
+6. Clone `infra-rncp` depuis GitHub et pousse `docker/firmware-poc/` sur GitLab
+7. Réactive la protection de branche
 
 > Le script utilise `git push --force` pour toujours refléter l'état de GitHub. Il peut être relancé autant de fois que nécessaire.
 
@@ -212,6 +212,6 @@ Pour une reconstruction complète de l'infrastructure (après redéploiement) :
 4. Créer les projets SonarQube et générer le token (section 2)
 5. Configurer les credentials Jenkins (section 3)
 6. Configurer le serveur SonarQube dans Jenkins (section 4)
-7. Lancer `./gitlab-init.sh` (section 6)
+7. Lancer `../gitlab-init.sh` (section 6)
 8. Créer les deux pipelines Jenkins (section 7)
 9. Lancer les builds manuellement

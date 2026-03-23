@@ -120,7 +120,7 @@ ansible-playbook -i inventory-ovh.yml install-foundation.yml
 
 # Déployer les services via ArgoCD (automatique après bootstrap)
 # Puis configuration manuelle (voir docs/configuration-manuelle.md)
-./gitlab-init.sh
+../gitlab-init.sh
 ```
 
 ### Un service spécifique est down

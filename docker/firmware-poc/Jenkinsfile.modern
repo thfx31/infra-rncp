@@ -73,7 +73,8 @@ spec:
     }
 
     environment {
-        HARBOR_URL      = "harbor.k8s.homelab.example"
+        // HARBOR_URL et SONAR_HOST_URL sont définis dans Jenkins :
+        // Manage Jenkins → System → Global properties → Environment variables
         HARBOR_PROJECT  = "poc-ci"
         IMAGE_NAME      = "build-modern-ubuntu22"
         FULL_IMAGE      = "${HARBOR_URL}/${HARBOR_PROJECT}/${IMAGE_NAME}"
@@ -235,7 +236,7 @@ spec:
                     withCredentials([string(credentialsId: "sonarqube", variable: "SONAR_TOKEN")]) {
                         sh """
                             docker run --rm \
-                                -e SONAR_HOST_URL=https://sonarqube.k8s.homelab.example \
+                                -e SONAR_HOST_URL=${SONAR_HOST_URL} \
                                 -e SONAR_TOKEN=\${SONAR_TOKEN} \
                                 -v \$(pwd):/usr/src \
                                 sonarsource/sonar-scanner-cli:latest \

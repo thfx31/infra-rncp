@@ -20,10 +20,11 @@ set -euo pipefail
 
 # --- Configuration -----------------------------------------------------------
 
-KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config-poc}"
+KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 export KUBECONFIG
 
-GITLAB_URL="https://gitlab.k8s.homelab.example"
+# Surcharger via variable d'environnement : GITLAB_URL=https://... ./gitlab-init.sh
+GITLAB_URL="${GITLAB_URL:-https://gitlab.k8s.homelab.example}"
 GITLAB_GROUP="poc-ci"
 GITLAB_PROJECT="firmware-poc"
 GITLAB_DEFAULT_BRANCH="main"

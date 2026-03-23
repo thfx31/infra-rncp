@@ -53,7 +53,7 @@ voir [docs/configuration-manuelle.md](docs/configuration-manuelle.md).
 
 ```bash
 # Initialiser le projet GitLab avec le code firmware
-./gitlab-init.sh
+../gitlab-init.sh
 ```
 
 ## Prérequis

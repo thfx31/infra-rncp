@@ -1,6 +1,6 @@
 # Terraform
-.terraform/
-.terraform.lock.hcl
+**/.terraform/
+**/.terraform.lock.hcl
 *.tfstate
 *.tfstate.backup
 *.tfplan
@@ -10,22 +10,21 @@ terraform.tfvars
 # Ansible
 *.retry
 secrets.yml
+tf_outputs.json
 
 # Python
 __pycache__/
 *.pyc
 
-# Clés SSH
-*.pub
-*.pem
-
 # Kubeconfig
 config-poc
+config-ovh
+kubeconfig.yml
 
-# OS
-.DS_Store
-Thumbs.db
+# Clés SSH
+*.pem
 
 # IDE
 .vscode/
-.idea/.ansible/
+.idea/
+.ansible/
