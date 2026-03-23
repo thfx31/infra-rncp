@@ -59,6 +59,24 @@ jobs:
           # Attendre que le CCM et le CSI aient supprimé les ressources cloud
           sleep 60
 
+      - name: Supprimer les volumes block storage orphelins
+        continue-on-error: true
+        run: |
+          curl -s -X GET \
+            -H "X-Auth-Token: ${{ secrets.SCW_SECRET_KEY }}" \
+            -H "X-Auth-Organization: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}" \
+            "https://api.scaleway.com/block/v1alpha1/zones/fr-par-2/volumes" \
+            | python3 -c "
+          import json, sys, subprocess
+          data = json.load(sys.stdin)
+          for vol in data.get('volumes', []):
+              if not vol.get('references'):
+                  print(f'Suppression volume orphelin: {vol[\"name\"]} ({vol[\"id\"]})')
+                  subprocess.run(['curl', '-s', '-X', 'DELETE',
+                      '-H', 'X-Auth-Token: ${{ secrets.SCW_SECRET_KEY }}',
+                      f'https://api.scaleway.com/block/v1alpha1/zones/fr-par-2/volumes/{vol[\"id\"]}'])
+          "
+
       - name: Supprimer les IPs LB orphelines
         continue-on-error: true
         run: |
