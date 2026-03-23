@@ -27,6 +27,55 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_BACKEND_SECRET_KEY }}
         run: terraform init
 
+      - name: Récupérer l'IP du control plane
+        id: cp_ip
+        working-directory: ${{ env.TF_DIR }}
+        env:
+          AWS_ACCESS_KEY_ID:      ${{ secrets.TF_BACKEND_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY:  ${{ secrets.TF_BACKEND_SECRET_KEY }}
+          SCW_ACCESS_KEY:         ${{ secrets.SCW_ACCESS_KEY }}
+          SCW_SECRET_KEY:         ${{ secrets.SCW_SECRET_KEY }}
+          SCW_DEFAULT_PROJECT_ID: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+          SCW_DEFAULT_REGION:     fr-par
+          SCW_DEFAULT_ZONE:       fr-par-2
+        run: echo "ip=$(terraform output -raw control_plane_ip_public)" >> $GITHUB_OUTPUT
+
+      - name: Nettoyer les ressources Scaleway créées par K8s
+        continue-on-error: true
+        env:
+          CP_IP: ${{ steps.cp_ip.outputs.ip }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          mkdir -p ~/.kube
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 \
+            almalinux@${CP_IP} "sudo cat /etc/kubernetes/admin.conf" > ~/.kube/config
+          chmod 600 ~/.kube/config
+          # Supprimer les PVCs (déclenche la suppression des volumes Scaleway via CSI)
+          kubectl delete pvc --all --all-namespaces --timeout=120s || true
+          # Supprimer les services LoadBalancer (déclenche la suppression du LB via CCM)
+          kubectl delete svc -n ingress-nginx ingress-nginx-controller --timeout=60s || true
+          # Attendre que le CCM et le CSI aient supprimé les ressources cloud
+          sleep 60
+
+      - name: Supprimer les IPs LB orphelines
+        continue-on-error: true
+        run: |
+          curl -s -X GET \
+            -H "X-Auth-Token: ${{ secrets.SCW_SECRET_KEY }}" \
+            "https://api.scaleway.com/lb/v1/zones/fr-par-2/ips" \
+            | python3 -c "
+          import json, sys, subprocess
+          data = json.load(sys.stdin)
+          for ip in data.get('ips', []):
+              if ip.get('lb_id') is None:
+                  print(f'Suppression IP LB orpheline: {ip[\"ip_address\"]} ({ip[\"id\"]})')
+                  subprocess.run(['curl', '-s', '-X', 'DELETE',
+                      '-H', 'X-Auth-Token: ${{ secrets.SCW_SECRET_KEY }}',
+                      f'https://api.scaleway.com/lb/v1/zones/fr-par-2/ips/{ip[\"id\"]}'])
+          "
+
       - name: Terraform destroy
         working-directory: ${{ env.TF_DIR }}
         env:
