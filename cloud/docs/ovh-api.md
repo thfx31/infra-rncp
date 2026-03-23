@@ -43,4 +43,4 @@ Ouvrir la `validationUrl` dans un navigateur et valider. Le `consumerKey` est al
 | `OVH_CONSUMER_KEY` | `consumerKey` (étape 2) |
 
 > Si ces secrets sont déjà configurés dans le dépôt pour `cloud/`, ils s'appliquent
-> automatiquement à `cloud2/` aussi — rien à refaire.
+> automatiquement à `cloud/` aussi — rien à refaire.

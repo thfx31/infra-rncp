@@ -14,8 +14,9 @@ spec:
     helm:
       valuesObject:
         controller:
+          adminPassword: "Ch4ng3M3!"
           nodeSelector:
-            kubernetes.io/hostname: rncp-worker-02
+            kubernetes.io/hostname: rncp-scw-worker-02
           ingress:
             enabled: true
             ingressClassName: nginx
@@ -45,14 +46,14 @@ spec:
             - pipeline-stage-view:latest
         persistence:
           enabled: true
-          storageClass: longhorn
+          storageClass: scw-bssd
           size: 10Gi
         agent:
           enabled: true
           # Forcer les agents de build sur worker-01 (29% RAM utilisée)
           # worker-02 est à 84% et ne supporterait pas un build
           nodeSelector:
-            kubernetes.io/hostname: rncp-worker-01
+            kubernetes.io/hostname: rncp-scw-worker-01
           resources:
             requests:
               cpu: 200m

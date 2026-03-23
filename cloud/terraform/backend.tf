@@ -2,14 +2,12 @@ terraform {
   backend "s3" {
     bucket = "terraform-state-rncp"
     key    = "cloud/terraform.tfstate"
-    region = "gra"
+    region = "fr-par"
 
-    # Endpoint OVH Object Storage compatible S3
     endpoints = {
-      s3 = "https://s3.gra.cloud.ovh.net"
+      s3 = "https://s3.fr-par.scw.cloud"
     }
 
-    # Désactiver les vérifications AWS non supportées par OVH
     skip_credentials_validation = true
     skip_requesting_account_id  = true
     skip_metadata_api_check     = true

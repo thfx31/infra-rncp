@@ -1,13 +1,14 @@
-# Documentation — cloud/ (OVH Public Cloud)
+# Documentation — cloud/ (Scaleway)
 
-Guide de mise en place du cluster K8s RNCP sur OVH Public Cloud.
+Guide de mise en place du cluster K8s RNCP sur Scaleway.
+Alternative à `cloud/` (OVH) — même stack K8s, provider cloud différent.
 
 ## Ordre de lecture recommandé
 
 ### Avant de commencer
 
-1. **[ovh-setup.md](ovh-setup.md)** — Créer les credentials OVH nécessaires
-   (token API, user OpenStack, clé SSH, bucket remote state).
+1. **[scaleway-setup.md](scaleway-setup.md)** — Créer les credentials Scaleway
+   (API keys, clé SSH, bucket remote state).
    *À faire une fois, avant tout.*
 
 2. **[github-actions.md](github-actions.md)** — Configurer les GitHub Secrets
@@ -17,17 +18,17 @@ Guide de mise en place du cluster K8s RNCP sur OVH Public Cloud.
 ### Comprendre l'infrastructure
 
 3. **[terraform.md](terraform.md)** — Variables Terraform, remote state S3,
-   description des ressources OVH créées (instances, réseau, LB).
+   description des ressources Scaleway créées (instances, réseau, LB).
 
-4. **[ovh-lb.md](ovh-lb.md)** — Comprendre le Load Balancer OVH managé
-   (remplace MetalLB). *Nouveau concept vs proxmox/.*
+4. **[scaleway-lb.md](scaleway-lb.md)** — Comprendre le Load Balancer Scaleway
+   provisionné automatiquement par le CCM.
 
-5. **[cinder-csi.md](cinder-csi.md)** — Comprendre le stockage Cinder CSI
-   (remplace Longhorn). *Nouveau concept vs proxmox/.*
+5. **[scaleway-csi.md](scaleway-csi.md)** — Comprendre le stockage Block Storage
+   Scaleway via le CSI driver.
 
-6. **[ansible.md](ansible.md)** — Inventaire dynamique, playbooks, rôles adaptés OVH.
+6. **[ansible.md](ansible.md)** — Inventaire dynamique, playbooks, rôles.
 
-### GitOps et CI/CD (identiques à proxmox/)
+### GitOps et CI/CD
 
 7. **[argocd_gitops.md](argocd_gitops.md)** — Pattern App-of-Apps, déploiement
    des applications via ArgoCD.
@@ -42,26 +43,13 @@ Guide de mise en place du cluster K8s RNCP sur OVH Public Cloud.
 
 10. **[demo-runbook.md](demo-runbook.md)** — Scénario de démonstration complet.
 
-### Référence
-
-- **[openstack-cli.md](openstack-cli.md)** — Commandes OpenStack CLI utiles (debug, nettoyage, gestion des ressources).
-
 ---
 
 ## Séquence de déploiement résumée
 
 ```
-1. Lire ovh-setup.md       → créer les credentials
+1. Lire scaleway-setup.md  → créer les credentials
 2. Lire github-actions.md  → configurer les secrets GitHub
-3. Lancer workflow deploy   → Actions > Deploy K8s cluster > Run workflow
+3. Lancer workflow deploy   → Actions > Deploy K8s cluster (Scaleway) > Run workflow
 4. Suivre configuration-manuelle.md → post-déploiement
-5. Lancer workflow check    → vérifier l'état du cluster
-```
-
-Ou en local :
-```bash
-make setup && make tf-init && make tf-apply
-make inventory && make ping && make bootstrap
-make init-cluster && make kubeconfig
-make install-foundation && make check
 ```

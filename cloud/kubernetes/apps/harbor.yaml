@@ -33,31 +33,31 @@ spec:
           updateStrategy:
             type: Recreate
           nodeSelector:
-            kubernetes.io/hostname: rncp-worker-01
+            kubernetes.io/hostname: rncp-scw-worker-01
         jobservice:
           updateStrategy:
             type: Recreate
         core:
           nodeSelector:
-            kubernetes.io/hostname: rncp-worker-01
+            kubernetes.io/hostname: rncp-scw-worker-01
         persistence:
           enabled: true
           persistentVolumeClaim:
             registry:
-              storageClass: longhorn
+              storageClass: scw-bssd
               size: 10Gi
             database:
-              storageClass: longhorn
+              storageClass: scw-bssd
               size: 2Gi
             redis:
-              storageClass: longhorn
+              storageClass: scw-bssd
               size: 1Gi
             jobservice:
               jobLog:
-                storageClass: longhorn
+                storageClass: scw-bssd
                 size: 1Gi
             trivy:
-              storageClass: longhorn
+              storageClass: scw-bssd
               size: 2Gi
   destination:
     server: https://kubernetes.default.svc

@@ -1,7 +1,0 @@
----
-galaxy_info:
-  role_name: cinder-csi
-  author: thomas
-  description: Déploiement du CSI driver OpenStack Cinder sur K8s
-  min_ansible_version: "2.9"
-dependencies: []

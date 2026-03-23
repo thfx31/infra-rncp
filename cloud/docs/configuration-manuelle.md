@@ -13,6 +13,20 @@ Ce document décrit toutes les étapes de configuration manuelle nécessaires ap
 
 ---
 
+## 0. Récupérer le kubeconfig
+
+Après déploiement via GitHub Actions :
+
+```bash
+ssh -i ~/.ssh/id_ed25519 almalinux@<CP_IP> "sudo cat /etc/kubernetes/admin.conf" > ~/.kube/config-scw
+export KUBECONFIG=~/.kube/config-scw
+kubectl get nodes
+```
+
+L'IP du control plane est visible dans les outputs du job Terraform ou dans la console Scaleway.
+
+---
+
 ## 1. Récupération des mots de passe initiaux
 
 ### Mot de passe GitLab root
@@ -28,10 +42,7 @@ kubectl -n gitlab get secret gitlab-gitlab-initial-root-password \
 
 ### Mot de passe Jenkins admin
 
-```bash
-kubectl -n jenkins get secret jenkins \
-    -o jsonpath='{.data.jenkins-admin-password}' | base64 -d
-```
+Login : `admin` / `Ch4ng3M3!` (défini dans le chart Helm)
 
 ### Mot de passe Harbor admin
 
@@ -193,7 +204,7 @@ Même procédure avec :
 
 ## 8. Ordre de configuration recommandé
 
-Pour une reconstruction complète de l'infrastructure (après redéploiement ou sur OVH) :
+Pour une reconstruction complète de l'infrastructure (après redéploiement) :
 
 1. Attendre que tous les pods soient `Running` : `kubectl get pods -A`
 2. Récupérer les mots de passe (section 1)
@@ -204,4 +215,3 @@ Pour une reconstruction complète de l'infrastructure (après redéploiement ou 
 7. Lancer `./gitlab-init.sh` (section 6)
 8. Créer les deux pipelines Jenkins (section 7)
 9. Lancer les builds manuellement
-

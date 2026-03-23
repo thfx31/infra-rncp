@@ -1,3 +1,0 @@
----
-cinder_csi_chart_version: "2.32.0"
-cinder_storage_type: "classic"

@@ -30,7 +30,7 @@ Cette IP est celle à pointer dans le DNS pour les domaines `*.k8s.yplank.fr`.
 
 ## Différence vs OVH (cloud/)
 
-| Aspect | OVH CCM (cloud/) | Scaleway CCM (cloud2/) |
+| Aspect | OVH CCM (cloud/) | Scaleway CCM (cloud/) |
 |--------|-----------------|----------------------|
 | Config | Fichier `cloud.conf` (ini OpenStack) | Secret K8s avec API keys Scaleway |
 | Terraform | Floating IP LB pré-provisionnée | LB créé dynamiquement par le CCM |

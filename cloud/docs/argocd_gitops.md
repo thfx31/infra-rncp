@@ -106,4 +106,11 @@ Chaque service doit avoir un `secretName` TLS unique pour éviter les conflits d
 
 ## DNS
 
-Tous les sous-domaines `*.k8s.yplank.fr` pointent vers `192.168.1.140` (IP MetalLB de l'Ingress NGINX), configuré dans AdGuard Home (homelab)
+Tous les sous-domaines `*.k8s.yplank.fr` pointent vers l'IP publique du Load Balancer
+Scaleway (provisionnée automatiquement par le CCM lors du déploiement d'ingress-nginx).
+
+Récupérer l'IP LB :
+```bash
+kubectl get svc -n ingress-nginx ingress-nginx-controller \
+  -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+```

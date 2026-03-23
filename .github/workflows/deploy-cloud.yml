@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  TF_DIR:       cloud2/terraform
-  ANSIBLE_DIR:  cloud2/ansible
+  TF_DIR:       cloud/terraform
+  ANSIBLE_DIR:  cloud/ansible
   VENV:         /opt/venv/ansible
 
 jobs:

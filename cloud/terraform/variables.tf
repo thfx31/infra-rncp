@@ -1,40 +1,41 @@
-variable "ovh_region" {
-  description = "Région OVH Public Cloud (ex: GRA9, SBG5, DE1)"
+variable "scw_region" {
+  description = "Région Scaleway (ex: fr-par, nl-ams, pl-waw)"
   type        = string
-  default     = "GRA9"
+  default     = "fr-par"
+}
+
+variable "scw_zone" {
+  description = "Zone Scaleway (ex: fr-par-1, fr-par-2, nl-ams-1)"
+  type        = string
+  default     = "fr-par-2"
 }
 
 variable "cluster_name" {
   description = "Préfixe des noms de ressources"
   type        = string
-  default     = "rncp-ovh"
+  default     = "rncp-scw"
 }
 
-variable "flavor_cp" {
-  description = "Flavor OVH pour le control plane"
+variable "instance_type_cp" {
+  description = "Type d'instance Scaleway pour le control plane (4 vCPU / 8 GB)"
   type        = string
-  default     = "b3-8"
+  default     = "DEV1-L"
 }
 
-variable "flavor_worker" {
-  description = "Flavor OVH pour les workers"
+variable "instance_type_worker" {
+  description = "Type d'instance Scaleway pour les workers (4 vCPU / 12 GB)"
   type        = string
-  default     = "b3-16"
+  default     = "DEV1-XL"
 }
 
-variable "image_name" {
-  description = "Image OS pour les instances (AlmaLinux 9)"
+variable "image" {
+  description = "Image Scaleway — vérifier le nom exact : scw marketplace image list | grep -i alma"
   type        = string
-  default     = "AlmaLinux 9"
+  default     = "almalinux_9"
 }
 
-variable "ssh_key_name" {
-  description = "Nom de la clé SSH enregistrée dans OVH Public Cloud"
-  type        = string
-}
-
-variable "vrack_subnet" {
-  description = "CIDR du subnet privé vRack"
+variable "private_subnet" {
+  description = "CIDR du réseau privé inter-nodes"
   type        = string
   default     = "10.0.0.0/24"
 }
@@ -43,10 +44,4 @@ variable "domain" {
   description = "Domaine principal des services exposés"
   type        = string
   default     = "k8s.yplank.fr"
-}
-
-variable "os_tenant_id" {
-  description = "ID du projet OpenStack (OVH_TENANT_ID)"
-  type        = string
-  sensitive   = true
 }

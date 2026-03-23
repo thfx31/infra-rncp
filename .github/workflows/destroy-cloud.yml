@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  TF_DIR: cloud2/terraform
+  TF_DIR: cloud/terraform
 
 jobs:
   destroy:

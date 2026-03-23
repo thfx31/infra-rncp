@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/thfx31/infra-rncp.git
-    targetRevision: feat/cloud_k8s
+    targetRevision: main
     path: cloud/kubernetes/apps
   destination:
     server: https://kubernetes.default.svc

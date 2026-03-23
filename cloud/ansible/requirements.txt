@@ -1,6 +1,5 @@
-# #######
-# runtime
-# #######
-ansible
-lint
+ansible>=9.0
+ansible-lint
 kubernetes
+openshift
+PyYAML

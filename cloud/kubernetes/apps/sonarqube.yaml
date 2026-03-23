@@ -35,14 +35,14 @@ spec:
           limits:
             memory: 3Gi
         nodeSelector:
-          kubernetes.io/hostname: rncp-worker-02
+          kubernetes.io/hostname: rncp-scw-worker-02
         persistence:
           enabled: true
-          storageClass: longhorn
+          storageClass: scw-bssd
           size: 5Gi
         postgresql:
           persistence:
-            storageClass: longhorn
+            storageClass: scw-bssd
             size: 5Gi
   destination:
     server: https://kubernetes.default.svc
