@@ -135,7 +135,24 @@ Tous les credentials Jenkins se configurent dans **Manage Jenkins → Credential
 
 ---
 
-## 5. Création du projet Harbor
+## 5. Variables d'environnement globales Jenkins
+
+Les Jenkinsfiles lisent `HARBOR_URL` et `SONAR_HOST_URL` depuis les variables globales Jenkins.
+
+1. **Manage Jenkins → System**
+2. Section **Global properties** → cocher **Environment variables**
+3. Ajouter les deux variables :
+
+| Nom | Valeur |
+|-----|--------|
+| `HARBOR_URL` | `harbor.k8s.yplank.fr` |
+| `SONAR_HOST_URL` | `https://sonarqube.k8s.yplank.fr` |
+
+4. **Save**
+
+---
+
+## 6. Création du projet Harbor
 
 1. Connecte-toi sur `https://harbor.k8s.yplank.fr` (admin / Ch4ng3M3!)
 2. **Projects → New Project**
@@ -150,7 +167,7 @@ Tous les credentials Jenkins se configurent dans **Manage Jenkins → Credential
 
 ---
 
-## 6. Initialisation du projet GitLab
+## 7. Initialisation du projet GitLab
 
 Le script `gitlab-init.sh` (racine du dépôt) automatise la création du groupe, du projet et le push du code source depuis GitHub.
 
@@ -172,7 +189,7 @@ Le script effectue les opérations suivantes :
 
 ---
 
-## 7. Création des pipelines Jenkins
+## 8. Création des pipelines Jenkins
 
 ### Pipeline firmware-poc (Ubuntu 18.04 + gcc-7)
 
@@ -202,16 +219,18 @@ Même procédure avec :
 
 ---
 
-## 8. Ordre de configuration recommandé
+## 9. Ordre de configuration recommandé
 
 Pour une reconstruction complète de l'infrastructure (après redéploiement) :
 
 1. Attendre que tous les pods soient `Running` : `kubectl get pods -A`
 2. Récupérer les mots de passe (section 1)
-3. Créer le projet Harbor `poc-ci` (section 5)
+3. Créer le projet Harbor `poc-ci` (section 6)
 4. Créer les projets SonarQube et générer le token (section 2)
 5. Configurer les credentials Jenkins (section 3)
 6. Configurer le serveur SonarQube dans Jenkins (section 4)
-7. Lancer `../gitlab-init.sh` (section 6)
-8. Créer les deux pipelines Jenkins (section 7)
+7. Configurer les variables d'environnement globales Jenkins (section 5)
+8. Lancer `../gitlab-init.sh` (section 7)
+9. Créer les deux pipelines Jenkins (section 8)
+10. Lancer les builds manuellement
 9. Lancer les builds manuellement
