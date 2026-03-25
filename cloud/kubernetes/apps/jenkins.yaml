@@ -14,7 +14,8 @@ spec:
     helm:
       valuesObject:
         controller:
-          adminPassword: "Ch4ng3M3!"
+          admin:
+            password: "Ch4ng3M3!"
           nodeSelector:
             kubernetes.io/hostname: rncp-scw-worker-02
           ingress:
