@@ -38,7 +38,7 @@ spec:
             - kubernetes:4423.vb_59f230b_ce53
             - workflow-aggregator:608.v67378e9d3db_1
             - git:5.10.0
-            - configuration-as-code:2037.v8e5349845172
+            - configuration-as-code:2053.vb_0da_47381a_25
           additionalPlugins:
             - gitlab-plugin:latest
             - sonar:latest
