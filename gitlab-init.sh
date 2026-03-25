@@ -23,12 +23,17 @@ set -euo pipefail
 KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 export KUBECONFIG
 
-# Surcharger via variable d'environnement : GITLAB_URL=https://... ./gitlab-init.sh
+# Surcharger via variables d'environnement :
+# GITLAB_URL=https://... GITLAB_ROOT_PASSWORD=... ./gitlab-init.sh
 GITLAB_URL="${GITLAB_URL:-https://gitlab.k8s.homelab.example}"
+GITLAB_ROOT_PASSWORD="${GITLAB_ROOT_PASSWORD:-}"
 GITLAB_GROUP="poc-ci"
 GITLAB_PROJECT="firmware-poc"
 GITLAB_DEFAULT_BRANCH="main"
-GITLAB_ROOT_PASSWORD="LPwd*TESOadm507"
+
+if [ -z "$GITLAB_ROOT_PASSWORD" ]; then
+  error "GITLAB_ROOT_PASSWORD est requis. Récupère-le avec : kubectl -n gitlab get secret gitlab-gitlab-initial-root-password -o jsonpath='{.data.password}' | base64 -d"
+fi
 
 # Dépôt GitHub contenant les sources du firmware
 GITHUB_REPO="https://github.com/thfx31/infra-rncp.git"

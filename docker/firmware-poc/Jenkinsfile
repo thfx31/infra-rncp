@@ -29,8 +29,6 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
-  nodeSelector:
-    kubernetes.io/hostname: rncp-worker-01
   volumes:
     - name: workspace-volume
       emptyDir: {}

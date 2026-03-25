@@ -120,6 +120,9 @@ ansible-playbook -i inventory-ovh.yml install-foundation.yml
 
 # Déployer les services via ArgoCD (automatique après bootstrap)
 # Puis configuration manuelle (voir docs/configuration-manuelle.md)
+GITLAB_URL=https://gitlab.k8s.homelab.example \
+GITLAB_ROOT_PASSWORD=$(kubectl -n gitlab get secret gitlab-gitlab-initial-root-password \
+  -o jsonpath='{.data.password}' | base64 -d) \
 ../gitlab-init.sh
 ```
 

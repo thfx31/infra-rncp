@@ -18,6 +18,7 @@ spec:
             password: "Ch4ng3M3!"
           nodeSelector:
             kubernetes.io/hostname: rncp-scw-worker-02
+
           ingress:
             enabled: true
             ingressClassName: nginx

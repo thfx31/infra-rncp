@@ -162,7 +162,10 @@ Le script `gitlab-init.sh` (racine du dépôt) automatise la création du groupe
 
 ```bash
 # Depuis le dossier proxmox/
-GITLAB_URL=https://gitlab.k8s.homelab.example ../gitlab-init.sh
+GITLAB_URL=https://gitlab.k8s.homelab.example \
+GITLAB_ROOT_PASSWORD=$(kubectl -n gitlab get secret gitlab-gitlab-initial-root-password \
+  -o jsonpath='{.data.password}' | base64 -d) \
+../gitlab-init.sh
 ```
 
 Le script effectue les opérations suivantes :

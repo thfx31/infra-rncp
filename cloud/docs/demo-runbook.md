@@ -34,6 +34,8 @@ kubectl get secret gitlab-gitlab-initial-root-password \
 
 # Jenkins (login: admin / Ch4ng3M3!)
 
+# Grafana (login: admin / Ch4ng3M3!)
+
 # Harbor (login: admin)
 # Mot de passe défini dans le chart : Ch4ng3M3!
 

@@ -60,8 +60,9 @@ Défini dans le `values.yaml` du chart Harbor lors du déploiement ArgoCD. Par d
 4. **Display name** : `Firmware POC`
 5. **Main branch** : `main`
 6. Clique **Set up**
-7. À l'étape "Set up CI", sélectionne **"With Jenkins"** puis **"Locally"**
-8. À l'étape "New code definition", sélectionne **"Previous version"** → **Create project**
+5. Follows tje instance's default > create project
+6. Analysis Method > With Jenkins
+7. Analyze your project with Jenkins > Other (for Go, PHP..)
 
 Répéter pour le second projet :
 - **Project key** : `firmware-poc-modern`
@@ -69,20 +70,20 @@ Répéter pour le second projet :
 
 ### 2.2 Génération du token SonarQube
 
-1. Clique sur ton avatar en haut à droite → **My Account**
+1. Cliquer sur ton avatar en haut à droite → **My Account**
 2. Onglet **Security**
 3. **Generate Tokens** :
    - **Name** : `Jenkins`
    - **Type** : `User Token`
    - **Expires in** : `No expiration` (ou selon la politique de sécurité)
-4. Clique **Generate**
-5. **Copie le token immédiatement** — il ne sera plus affiché après fermeture de la page
+4. Cliquer **Generate**
+5. **Copier le token ** - il ne sera plus affiché après fermeture de la page
 
 ---
 
 ## 3. Configuration des credentials Jenkins
 
-Tous les credentials Jenkins se configurent dans **Manage Jenkins → Credentials → System → Global credentials → Add credentials**.
+Tous les credentials Jenkins se configurent dans **Manage Jenkins → Credentials →  Add credentials**.
 
 ### 3.1 Credential Harbor
 
@@ -173,7 +174,10 @@ Le script `gitlab-init.sh` (racine du dépôt) automatise la création du groupe
 
 ```bash
 # Depuis le dossier cloud/
-GITLAB_URL=https://gitlab.k8s.yplank.fr ../gitlab-init.sh
+GITLAB_URL=https://gitlab.k8s.yplank.fr \
+GITLAB_ROOT_PASSWORD=$(kubectl -n gitlab get secret gitlab-gitlab-initial-root-password \
+  -o jsonpath='{.data.password}' | base64 -d) \
+../gitlab-init.sh
 ```
 
 Le script effectue les opérations suivantes :
@@ -233,4 +237,4 @@ Pour une reconstruction complète de l'infrastructure (après redéploiement) :
 8. Lancer `../gitlab-init.sh` (section 7)
 9. Créer les deux pipelines Jenkins (section 8)
 10. Lancer les builds manuellement
-9. Lancer les builds manuellement
+
