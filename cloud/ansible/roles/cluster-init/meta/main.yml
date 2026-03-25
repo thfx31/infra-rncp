@@ -1,9 +1,10 @@
 ---
-author: Thomas Fauroux
-description: Initialisation du cluster Kubernetes — kubeadm init sur le control plane
-license: MIT
-min_ansible_version: "2.15"
-platforms:
-  - name: EL
-    versions: ["9"]
+galaxy_info:
+  author: Thomas Fauroux
+  description: Initialisation du cluster Kubernetes — kubeadm init sur le control plane
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: EL
+      versions: ["9"]
 dependencies: []
